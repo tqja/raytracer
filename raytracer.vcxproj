@@ -18,6 +18,18 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\colour.h" />
+    <ClInclude Include="src\Framebuffer.h" />
+    <ClInclude Include="src\Point.h" />
+    <ClInclude Include="src\stb_image_write.h" />
+    <ClInclude Include="src\vec3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Framebuffer.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\stb_write_impl.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -132,15 +144,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="stb_write_impl.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="colour.h" />
-    <ClInclude Include="stb_image_write.h" />
-    <ClInclude Include="vec3.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
