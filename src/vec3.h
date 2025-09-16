@@ -52,6 +52,17 @@ inline std::ostream& operator<<(std::ostream& out, const vec3& v) {
     return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
 }
 
+inline bool operator==(const vec3& a, const vec3& b) {
+    constexpr double EPS = 1e-9;
+    return std::fabs(a[0] - b[0]) <= EPS
+        && std::fabs(a[1] - b[1]) <= EPS
+        && std::fabs(a[2] - b[2]) <= EPS;
+}
+
+inline bool operator!=(const vec3& a, const vec3& b) {
+    return !(a == b);
+}
+
 inline vec3 operator+(const vec3& u, const vec3& v) {
     return vec3(u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]);
 }
