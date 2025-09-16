@@ -30,7 +30,8 @@ int main()
     constexpr int image_height = static_cast<int>(image_width / aspect_ratio);
     static_assert(image_height > 1, "image_height must be greater than 1");
     
-    Framebuffer framebuffer(image_height, image_width);
+    Framebuffer framebuffer{ image_height, image_width };
+    framebuffer.InitDefault();
 
     write_framebuffer_to_png("image.png", image_width, image_height, framebuffer);
 
