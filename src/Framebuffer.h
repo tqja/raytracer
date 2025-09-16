@@ -5,15 +5,22 @@
 #include <vector>
 
 class Framebuffer {
-private:
-    int height{};
-    int width{};
-    std::vector<colour> pixels;
-    void set_pixel_colour(const colour pixel_colour, const Point p);
-
 public:
-    Framebuffer(int height, int width);
-    void init_default();
-    std::vector<colour> get_framebuffer() { return pixels; }
+    static constexpr int max_width{ 8192 };
+    static constexpr int max_height{ 8192 };
+
+    Framebuffer(int width, int height);
+
+    std::vector<colour> GetFramebuffer() { return pixels; }
+    int GetWidth() { return width; }
+    int GetHeight() { return height; }
+    void SetPixelColour(const colour pixel_colour, const Point p);
+    void InitDefault();
+
+
+private:
+    int width{};
+    int height{};
+    std::vector<colour> pixels;
 };
 
