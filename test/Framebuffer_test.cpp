@@ -28,27 +28,24 @@ TEST_F(FramebufferTest, ConstructorShouldThrowWithZeroWidth) {
     EXPECT_THROW(Framebuffer f(1, 0), std::invalid_argument);
 }
 
-TEST(FramebufferTest, ConstructorShouldSucceedWithMinimumDimensions) {
+TEST_F(FramebufferTest, ConstructorShouldSucceedWithMinimumDimensions) {
     EXPECT_NO_THROW(Framebuffer f(1, 1));
 }
 
-TEST(FramebufferTest, ConstructorShouldSucceedWithMaximumDimensions) {
-    EXPECT_NO_THROW(Framebuffer f(Framebuffer::max_height, Framebuffer::max_width));
+TEST_F(FramebufferTest, ConstructorShouldThrowAboveMaximumDimensions) {
+    EXPECT_THROW(
+        Framebuffer fb(Framebuffer::max_height + 1, Framebuffer::max_width + 1),
+        std::invalid_argument
+    );
 }
 
-TEST(FramebufferTest, SetPixelColourShouldModifyPixelsCorrectly) {
-    Framebuffer f0{ 25, 25 };
-    int f0_height = f0.GetHeight();
-    int f0_width = f0.GetWidth();
+TEST_F(FramebufferTest, SetPixelColourShouldUpdateSpecifiedPixel) {
 
-    colour c1{ 1, 0, 0 };
-    colour c2{ 0, 1, 0 };
-    colour c3{ 0, 0, 1 };
+    framebuffer.SetPixelColour(colour, middle);
 
-    std::vector<colour> test_framebuffer(f0_height * f0_width);
-    test_framebuffer[0] = c1;
-    test_framebuffer[test_framebuffer.size() / 2] = c2;
-    test_framebuffer[test_framebuffer.size() - 1] = c3;
+    const auto pixels = framebuffer.GetFramebuffer();
+    EXPECT_EQ(pixels[middle.y * framebuffer.GetWidth() + middle.x], colour);
+}
 
     Point p1{ 0, 0 };
     Point p2{ f0_height / 2, f0_width / 2 };
