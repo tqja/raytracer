@@ -20,10 +20,12 @@ protected:
 };
 
 
+TEST_F(FramebufferTest, ConstructorShouldThrowWithZeroHeight) {
+    EXPECT_THROW(Framebuffer f(0, 1), std::invalid_argument);
 }
 
-TEST(FramebufferTest, ConstructorShouldThrowWithZeroWidth) {
-    EXPECT_THROW(Framebuffer f(1080, 0), std::invalid_argument);
+TEST_F(FramebufferTest, ConstructorShouldThrowWithZeroWidth) {
+    EXPECT_THROW(Framebuffer f(1, 0), std::invalid_argument);
 }
 
 TEST(FramebufferTest, ConstructorShouldSucceedWithMinimumDimensions) {
