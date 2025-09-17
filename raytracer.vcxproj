@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\colour.h" />
+    <ClInclude Include="src\Colour.h" />
     <ClInclude Include="src\Framebuffer.h" />
     <ClInclude Include="src\Point.h" />
     <ClInclude Include="src\stb_image_write.h" />
