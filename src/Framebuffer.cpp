@@ -1,5 +1,5 @@
 #include "Framebuffer.h"
-#include "colour.h"
+#include "Colour.h"
 #include "Point.h"
 #include <vector>
 #include <limits>
@@ -37,7 +37,7 @@ void Framebuffer::InitDefault() {
         for (int x = 0; x < width; x++) {
             float r = static_cast<float>(x) / width;
 
-            const colour pixel_colour(
+            const Colour pixel_colour(
                 static_cast<int>(255.999 * r),
                 static_cast<int>(255.999 * g),
                 static_cast<int>(255.999 * b)
@@ -48,7 +48,7 @@ void Framebuffer::InitDefault() {
     }
 }
 
-void Framebuffer::SetPixelColour(const colour pixel_colour, const Point p) {
+void Framebuffer::SetPixelColour(const Colour pixel_colour, const Point p) {
     const int row_offset = p.y * width;
     pixels[row_offset + p.x] = pixel_colour;
 }

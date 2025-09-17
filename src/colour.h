@@ -3,5 +3,5 @@
 #include <vector>
 #include "vec3.h"
 
-using colour = vec3;
+using Colour = vec3;
 

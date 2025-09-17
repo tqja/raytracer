@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Framebuffer.h"
+#include "Colour.h"
+#include "Point.h"
 
 //class FramebufferTest : public testing::Test {
 //protected:

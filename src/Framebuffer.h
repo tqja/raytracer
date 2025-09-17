@@ -1,6 +1,6 @@
 #pragma once
 
-#include "colour.h"
+#include "Colour.h"
 #include "Point.h"
 #include <vector>
 
@@ -11,16 +11,16 @@ public:
 
     Framebuffer(int width, int height);
 
-    std::vector<colour> GetFramebuffer() { return pixels; }
+    std::vector<Colour> GetFramebuffer() { return pixels; }
     int GetWidth() { return width; }
     int GetHeight() { return height; }
-    void SetPixelColour(const colour pixel_colour, const Point p);
+    void SetPixelColour(const Colour pixel_colour, const Point p);
     void InitDefault();
 
 
 private:
     int width{};
     int height{};
-    std::vector<colour> pixels;
+    std::vector<Colour> pixels;
 };
 
