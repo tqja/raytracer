@@ -24,8 +24,6 @@ Framebuffer::Framebuffer(int w, int h)
     }
 
     pixels.resize(width * height);
-
-    //InitDefault();
 }
 
 void Framebuffer::InitDefault() {
