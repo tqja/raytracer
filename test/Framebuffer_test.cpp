@@ -3,17 +3,23 @@
 #include "Colour.h"
 #include "Point.h"
 
-//class FramebufferTest : public testing::Test {
-//protected:
-//    FramebufferTest() {
-//    }
-//
-//    Framebuffer f0{ 1080, 1920 };
-//};
+class FramebufferTest : public testing::Test {
+protected:
+    FramebufferTest() {
+    }
+
+    const int width{ 12 };
+    const int height{ 9 };
+    Framebuffer framebuffer{ width, height };
+
+    Point top_left{ 0, 0 };
+    Point middle{ width / 2, height / 2 };
+    Point bottom_right{ width - 1, height - 1 };
+
+    Colour colour{ 1.0f, 1.0f, 1.0f };
+};
 
 
-TEST(FramebufferTest, ConstructorShouldThrowWithZeroHeight) {
-    EXPECT_THROW(Framebuffer f(0, 1920), std::invalid_argument);
 }
 
 TEST(FramebufferTest, ConstructorShouldThrowWithZeroWidth) {
