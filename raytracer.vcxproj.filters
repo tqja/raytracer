@@ -27,7 +27,7 @@
     <ClInclude Include="src\stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\vec3.h">
+    <ClInclude Include="src\Vec3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

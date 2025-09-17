@@ -23,7 +23,7 @@
     <ClInclude Include="src\Framebuffer.h" />
     <ClInclude Include="src\Point.h" />
     <ClInclude Include="src\stb_image_write.h" />
-    <ClInclude Include="src\vec3.h" />
+    <ClInclude Include="src\Vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Framebuffer.cpp" />
