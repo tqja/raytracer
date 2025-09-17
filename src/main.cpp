@@ -29,7 +29,7 @@ int main()
     constexpr int image_width{ 1920 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
     
-    Framebuffer framebuffer{ image_height, image_width };
+    Framebuffer framebuffer{ image_width, image_height };
     framebuffer.InitDefault();
 
     WriteFramebufferToPng("image.png", image_width, image_height, framebuffer);
