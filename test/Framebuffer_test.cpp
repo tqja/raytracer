@@ -16,7 +16,7 @@ protected:
     Point middle{ width / 2, height / 2 };
     Point bottom_right{ width - 1, height - 1 };
 
-    Colour colour{ 1.0f, 1.0f, 1.0f };
+    Colour colour{ 0.0, 128.0, 255.999 };
 };
 
 
