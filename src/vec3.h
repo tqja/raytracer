@@ -45,7 +45,7 @@ public:
     }
 };
 
-using point3 = Vec3;
+using Point3 = Vec3;
 
 
 inline std::ostream& operator<<(std::ostream& out, const Vec3& v) {
