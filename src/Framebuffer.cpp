@@ -29,13 +29,13 @@ Framebuffer::Framebuffer(int w, int h)
 }
 
 void Framebuffer::InitDefault() {
+    constexpr float b{ 0.5f };
     for (int y = 0; y < height; y++) {
-        float b = 0.5f;
         std::clog << "\rScanlines remaining: " << (height - y) << ' ' << std::flush;
-        float g = static_cast<float>(y) / height;
+        float g{ static_cast<float>(y) / height };
 
         for (int x = 0; x < width; x++) {
-            float r = static_cast<float>(x) / width;
+            float r{ static_cast<float>(x) / width };
 
             const Colour pixel_colour(
                 static_cast<int>(255.999 * r),
