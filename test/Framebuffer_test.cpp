@@ -47,13 +47,33 @@ TEST_F(FramebufferTest, SetPixelColourShouldUpdateSpecifiedPixel) {
     EXPECT_EQ(pixels[middle.y * framebuffer.GetWidth() + middle.x], colour);
 }
 
-    Point p1{ 0, 0 };
-    Point p2{ f0_height / 2, f0_width / 2 };
-    Point p3{ f0_height - 1, f0_width - 1 };
+TEST_F(FramebufferTest, SetPixelColourShouldNotAffectOtherPixels) {
+    auto before = framebuffer.GetFramebuffer();
 
-    f0.SetPixelColour(c1, p1);
-    f0.SetPixelColour(c2, p2);
-    f0.SetPixelColour(c3, p3);
+    framebuffer.SetPixelColour(colour, middle);
+    auto after = framebuffer.GetFramebuffer();
 
-    EXPECT_EQ(f0.GetFramebuffer(), test_framebuffer);
+
+    for (int y = 0; y < height; ++y) {
+        const int row_offset{ y * width };
+
+        for (int x = 0; x < width; ++x) {
+            if (x == middle.x && y == middle.y) {
+                EXPECT_EQ(after[row_offset + x], colour);
+            }
+            else {
+                EXPECT_EQ(before[row_offset + x],
+                          after[row_offset + x]);
+            }
+        }
+    }
+}
+
+TEST_F(FramebufferTest, SetPixelColourShouldWorkAtCorners) {
+    framebuffer.SetPixelColour(colour, top_left);
+    framebuffer.SetPixelColour(colour, bottom_right);
+
+    const auto pixels = framebuffer.GetFramebuffer();
+    EXPECT_EQ(pixels[0], colour);
+    EXPECT_EQ(pixels.back(), colour);
 }
