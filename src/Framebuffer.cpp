@@ -48,10 +48,10 @@ void Framebuffer::InitDefault() {
     }
 }
 
-void Framebuffer::SetPixelColour(const Colour pixel_colour, const Point p) {
+void Framebuffer::SetPixelColour(const Colour& colour, const Point& p) {
     assert(p.x < width && "p.x must be in range of framebuffer width");
     assert(p.y < height && "p.y must be in range of framebuffer height");
 
     const int row_offset = p.y * width;
-    pixels[row_offset + p.x] = pixel_colour;
+    pixels[row_offset + p.x] = colour;
 }
