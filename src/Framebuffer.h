@@ -12,15 +12,15 @@ public:
     Framebuffer(int width, int height);
 
     std::vector<Colour> GetFramebuffer() { return pixels; }
-    const int& GetWidth() const { return width; }
-    const int& GetHeight() const { return height; }
+    const int& GetWidth() const { return m_width; }
+    const int& GetHeight() const { return m_height; }
     void SetPixelColour(const Colour& colour, const Point& p);
     void InitDefault();
 
 
 private:
-    int width{};
-    int height{};
-    std::vector<Colour> pixels;
+    int m_width{};
+    int m_height{};
+    std::vector<Colour> pixels{};
 };
 
