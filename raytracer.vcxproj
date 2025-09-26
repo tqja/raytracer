@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Colour.h" />
     <ClInclude Include="src\Framebuffer.h" />
     <ClInclude Include="src\Point.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="src\Vec3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\stb_write_impl.cpp" />

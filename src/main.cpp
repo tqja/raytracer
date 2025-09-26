@@ -2,9 +2,11 @@
 #include <iostream>
 #include <vector>
 
-#include "Framebuffer.h"
+#include "Camera.h"
 #include "Colour.h"
-#include "vec3.h"
+#include "Framebuffer.h"
+#include "Ray.h"
+#include "Vec3.h"
 #include "stb_image_write.h"
 
 
@@ -23,14 +25,40 @@ void WriteFramebufferToPng(const char* filename, const int width, const int heig
     stbi_write_png(filename, width, height, channels, image.data(), width * channels);
 }
 
-int main()
-{
+Colour GetRayColour(const Ray& ray) {
+    return Colour(60, 60, 60);
+}
+
+void Render(int image_width, int image_height, Framebuffer& framebuffer, const Camera& camera) {
+    for (int y = 0; y < image_height; y++) {
+        std::clog << "\rScanlines remaining: " << (image_height - y) << ' ' << std::flush;
+
+        Vec3 row_start{ camera.GetOriginPixel() + (y * camera.GetPixelDeltaV()) };
+
+        for (int x = 0; x < image_width; x++) {
+            Vec3 pixel_center{ row_start + camera.GetPixelDeltaU() * x };
+            Vec3 ray_direction{ pixel_center - camera.GetCameraCenter() };
+
+            Ray ray(camera.GetCameraCenter(), ray_direction);
+            Colour ray_colour = GetRayColour(ray);
+
+            Point current_pixel{ x, y };
+            framebuffer.SetPixelColour(ray_colour, current_pixel);
+        }
+    }
+}
+
+int main() {
     constexpr float aspect_ratio{ 16.0f / 9.0f };
     constexpr int image_width{ 1920 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
-    
     Framebuffer framebuffer{ image_width, image_height };
-    framebuffer.InitDefault();
+
+    constexpr double viewport_height{ 2.0 };
+    constexpr double viewport_width{ viewport_height * (double(image_width) / image_height) };
+    Camera camera{ image_width, image_height, viewport_height };
+
+    Render(image_width, image_height, framebuffer, camera);
 
     WriteFramebufferToPng("image.png", image_width, image_height, framebuffer);
 
