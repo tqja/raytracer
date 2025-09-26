@@ -26,7 +26,9 @@ void WriteFramebufferToPng(const char* filename, const int width, const int heig
 }
 
 Colour GetRayColour(const Ray& ray) {
-    return Colour(60, 60, 60);
+    Vec3 unit_direction = unit_vector(ray.GetDirection());
+    double a = 0.5 * (unit_direction.y() + 1.0);
+    return (1.0 - a) * Colour(1.0, 1.0, 1.0) + a * Colour(0.5, 0.7, 1.0);
 }
 
 void Render(int image_width, int image_height, Framebuffer& framebuffer, const Camera& camera) {
