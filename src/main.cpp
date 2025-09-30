@@ -46,7 +46,10 @@ Colour RayColour(const Ray& ray, const Sphere& sphere) {
 
 }
 
-void Render(int image_width, int image_height, Framebuffer& framebuffer, const Camera& camera) {
+Framebuffer Render(int image_width, int image_height, const Camera& camera) {
+    Framebuffer framebuffer{ image_width, image_height };
+    Sphere sphere{ Vec3(0, 0, -1), 0.5 };
+
     for (int y = 0; y < image_height; y++) {
         std::clog << "\rScanlines remaining: " << (image_height - y) << ' ' << std::flush;
 
@@ -56,8 +59,8 @@ void Render(int image_width, int image_height, Framebuffer& framebuffer, const C
             Vec3 pixel_center{ row_start + camera.GetPixelDeltaU() * x };
             Vec3 ray_direction{ pixel_center - camera.GetCameraCenter() };
 
-            Ray ray(camera.GetCameraCenter(), ray_direction);
-            Colour ray_colour = RayColour(ray, Sphere(Vec3(0, 0, -1), 0.5));
+            Ray ray{ camera.GetCameraCenter(), ray_direction };
+            Colour ray_colour = RayColour(ray, sphere);
 
             Point current_pixel{ x, y };
             framebuffer.SetPixelColour(ray_colour, current_pixel);
@@ -69,12 +72,10 @@ int main() {
     constexpr float aspect_ratio{ 16.0f / 9.0f };
     constexpr int image_width{ 1920 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
-    Framebuffer framebuffer{ image_width, image_height };
-
     constexpr double viewport_height{ 2.0 };
-    Camera camera{ image_width, image_height, viewport_height };
 
-    Render(image_width, image_height, framebuffer, camera);
+    Camera camera{ image_width, image_height, viewport_height };
+    Framebuffer framebuffer{ Render(image_width, image_height, camera) };
 
     WriteFramebufferToPng("image.png", image_width, image_height, framebuffer);
 
