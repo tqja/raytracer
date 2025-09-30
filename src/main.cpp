@@ -32,9 +32,12 @@ Colour LerpColours(const Colour& c1, const Colour& c2, double blend) {
 }
 
 Colour RayColour(const Ray& ray, const Sphere& sphere) {
-    if (sphere.hit(ray)) {
-        // placeholder colour
-        return Colour(1.0, 0.0, 0.0);
+    double t{ sphere.hit(ray) };
+    bool ray_hit{ t > 0.0 };
+
+    if (ray_hit) {
+        Vec3 N = unit_vector(ray.at(t) - sphere.GetCenter());
+        return 0.5 * Colour(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
     }
 
     Vec3 unit_direction = unit_vector(ray.GetDirection());
