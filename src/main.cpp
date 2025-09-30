@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Colour.h"
 #include "Framebuffer.h"
+#include "Geometry.h"
 #include "Ray.h"
 #include "Vec3.h"
 #include "stb_image_write.h"
@@ -25,10 +26,21 @@ void WriteFramebufferToPng(const char* filename, const int width, const int heig
     stbi_write_png(filename, width, height, channels, image.data(), width * channels);
 }
 
-Colour GetRayColour(const Ray& ray) {
+Colour LerpColours(const Colour& c1, const Colour& c2, double blend) {
+    return (1.0 - blend) * c1 + blend * c2;
+    
+}
+
+Colour RayColour(const Ray& ray, const Sphere& sphere) {
+    if (sphere.hit(ray)) {
+        // placeholder colour
+        return Colour(1.0, 0.0, 0.0);
+    }
+
     Vec3 unit_direction = unit_vector(ray.GetDirection());
-    double a = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - a) * Colour(1.0, 1.0, 1.0) + a * Colour(0.5, 0.7, 1.0);
+    double blend = (unit_direction.y() + 1.0) / 2;
+    return LerpColours(Colour(1.0, 1.0, 1.0), Colour(0.5, 0.7, 1.0), blend);
+
 }
 
 void Render(int image_width, int image_height, Framebuffer& framebuffer, const Camera& camera) {
@@ -42,7 +54,7 @@ void Render(int image_width, int image_height, Framebuffer& framebuffer, const C
             Vec3 ray_direction{ pixel_center - camera.GetCameraCenter() };
 
             Ray ray(camera.GetCameraCenter(), ray_direction);
-            Colour ray_colour = GetRayColour(ray);
+            Colour ray_colour = RayColour(ray, Sphere(Vec3(0, 0, -1), 0.5));
 
             Point current_pixel{ x, y };
             framebuffer.SetPixelColour(ray_colour, current_pixel);
@@ -57,7 +69,6 @@ int main() {
     Framebuffer framebuffer{ image_width, image_height };
 
     constexpr double viewport_height{ 2.0 };
-    constexpr double viewport_width{ viewport_height * (double(image_width) / image_height) };
     Camera camera{ image_width, image_height, viewport_height };
 
     Render(image_width, image_height, framebuffer, camera);
