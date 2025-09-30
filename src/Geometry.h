@@ -12,7 +12,10 @@ public:
     Sphere(Vec3 center, double radius)
         : m_center{ center }, m_radius{ radius } {};
 
-    bool hit(const Ray& ray) const;
+    double hit(const Ray& ray) const;
+
+    const Vec3& GetCenter() const { return m_center; }
+    const double& GetRadius() const { return m_radius; }
 
 private:
     Vec3 m_center{};
