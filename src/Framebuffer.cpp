@@ -1,6 +1,6 @@
 #include "Framebuffer.h"
 #include "Colour.h"
-#include "Point.h"
+#include "Geometry.h"
 
 #include <cassert>
 #include <vector>

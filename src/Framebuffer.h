@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Colour.h"
-#include "Point.h"
+#include "Geometry.h"
 #include <vector>
 
 class Framebuffer {
