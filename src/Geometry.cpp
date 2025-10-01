@@ -2,15 +2,19 @@
 #include <cmath>
 
 double Sphere::hit(const Ray& ray) const {
+    constexpr double no_hit{ -1.0 };
     Vec3 oc = m_center - ray.GetOrigin();
+    Vec3 dir = ray.GetDirection();
 
-    double a = dot(ray.GetDirection(), ray.GetDirection());
-    double b = -2.0 * dot(ray.GetDirection(), oc);
-    double c = dot(oc, oc) - pow(m_radius, 2);
-    double discriminant = pow(b, 2) - (4.0 * a * c);
+    // h == b/-2 allowing a simplification of the quadratic
+    double a{ dir.length_squared() };
+    double h{ dot(dir, oc) };
+    double c{ oc.length_squared() - m_radius * m_radius };
+    double discriminant{ h * h - a * c };
 
     if (discriminant < 0) {
-        return -1.0;
+        return no_hit;
     }
-    return (-b - std::sqrt(discriminant)) / (2.0 * a);
+
+    return (h - std::sqrt(discriminant)) / a;
 }
