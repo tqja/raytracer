@@ -6,7 +6,10 @@
 #include "Colour.h"
 #include "Framebuffer.h"
 #include "Geometry.h"
+#include "Hittable.h"
+#include "HittableList.h"
 #include "Ray.h"
+#include "Utility.h"
 #include "Vec3.h"
 #include "stb_image_write.h"
 
@@ -46,7 +49,19 @@ Colour RayColour(const Ray& ray, const Sphere& sphere) {
 
 }
 
-Framebuffer Render(int image_width, int image_height, const Camera& camera) {
+HittableList InitWorld() {
+    HittableList world{};
+
+    Point3 p1{ 0, 0, -1 };
+    Point3 p2{ 0, -100.5, -1 };
+
+    world.add(make_shared<Sphere>(p1, 0.5));
+    world.add(make_shared<Sphere>(p2, 100));
+
+    return world;
+}
+
+Framebuffer Render(int image_width, int image_height, const Camera& camera, HittableList world) {
     Framebuffer framebuffer{ image_width, image_height };
     Sphere sphere{ Vec3(0, 0, -1), 0.5 };
 
@@ -60,12 +75,14 @@ Framebuffer Render(int image_width, int image_height, const Camera& camera) {
             Vec3 ray_direction{ pixel_center - camera.GetCameraCenter() };
 
             Ray ray{ camera.GetCameraCenter(), ray_direction };
-            Colour ray_colour = RayColour(ray, sphere);
+            Colour ray_colour = RayColour(ray, world);
 
             Point current_pixel{ x, y };
             framebuffer.SetPixelColour(ray_colour, current_pixel);
         }
     }
+
+    return framebuffer;
 }
 
 int main() {
@@ -74,8 +91,9 @@ int main() {
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
     constexpr double viewport_height{ 2.0 };
 
+    HittableList world{ InitWorld() };
     Camera camera{ image_width, image_height, viewport_height };
-    Framebuffer framebuffer{ Render(image_width, image_height, camera) };
+    Framebuffer framebuffer{ Render(image_width, image_height, camera, world) };
 
     WriteFramebufferToPng("image.png", image_width, image_height, framebuffer);
 
