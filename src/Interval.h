@@ -15,15 +15,15 @@ public:
         return m_min < x && x < m_max;
     }
 
-    double GetMin() const {
+    double Min() const {
         return m_min;
     }
 
-    double GetMax() const {
+    double Max() const {
         return m_max;
     }
 
-    double GetSize() const {
+    double Size() const {
         return m_max - m_min;
     }
 
