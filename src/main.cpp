@@ -34,13 +34,11 @@ Colour LerpColours(const Colour& c1, const Colour& c2, double blend) {
     
 }
 
-Colour RayColour(const Ray& ray, const Sphere& sphere) {
-    double t{ sphere.hit(ray) };
-    bool ray_hit{ t > 0.0 };
+Colour RayColour(const Ray& ray, const Hittable& world) {
+    HitRecord record{};
 
-    if (ray_hit) {
-        Vec3 N = unit_vector(ray.at(t) - sphere.GetCenter());
-        return 0.5 * Colour(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
+    if (world.hit(ray, 0, infinity, record)) {
+        return (record.normal + Colour(1.0, 1.0, 1.0)) / 2;
     }
 
     Vec3 unit_direction = unit_vector(ray.GetDirection());
