@@ -85,7 +85,7 @@ Framebuffer Render(int image_width, int image_height, const Camera& camera, Hitt
 
 int main() {
     constexpr float aspect_ratio{ 16.0f / 9.0f };
-    constexpr int image_width{ 1920 };
+    constexpr int image_width{ 400 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
     constexpr double viewport_height{ 2.0 };
 
