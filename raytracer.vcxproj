@@ -23,8 +23,11 @@
     <ClInclude Include="src\Colour.h" />
     <ClInclude Include="src\Framebuffer.h" />
     <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\Hittable.h" />
+    <ClInclude Include="src\HittableList.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\stb_image_write.h" />
+    <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\Vec3.h" />
   </ItemGroup>
   <ItemGroup>
