@@ -27,13 +27,15 @@ public:
         return m_max - m_min;
     }
 
-    static const Interval empty;
-    static const Interval universe;
+    static Interval Empty() {
+        return Interval(+infinity, -infinity);
+    }
+
+    static Interval Universe() {
+        return Interval(-infinity, +infinity);
+    }
 
 private:
     double m_min{};
     double m_max{};
 };
-
-const Interval Interval::empty = Interval(+infinity, -infinity);
-const Interval Interval::universe = Interval(-infinity, +infinity);
