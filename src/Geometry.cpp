@@ -1,7 +1,7 @@
 #include "Geometry.h"
 #include <cmath>
 
-bool Sphere::hit(const Ray& ray, double ray_tmin, double ray_tmax, HitRecord& record) const {
+bool Sphere::hit(const Ray& ray, Interval ray_t, HitRecord& record) const {
     Vec3 oc = m_center - ray.GetOrigin();
     Vec3 dir = ray.GetDirection();
 
@@ -16,14 +16,11 @@ bool Sphere::hit(const Ray& ray, double ray_tmin, double ray_tmax, HitRecord& re
     }
 
     double sqrt_d{ std::sqrt(discriminant) };
-    auto in_range = [ray_tmin, ray_tmax](double x) {
-        return ray_tmin < x && x < ray_tmax;
-    };
 
     double root = (h - sqrt_d) / a;
-    if (!in_range(root)) {
+    if (!ray_t.Surrounds(root)) {
         root = (h + sqrt_d) / a;
-        if (!in_range(root)) {
+        if (!ray_t.Surrounds(root)) {
             return false;
         }
     }

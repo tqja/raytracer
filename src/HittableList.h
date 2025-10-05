@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hittable.h"
+#include "Interval.h"
 #include "Ray.h"
 
 #include <memory>
@@ -18,13 +19,15 @@ public:
     void clear() { m_objects.clear(); }
     void add(shared_ptr<Hittable> object) { m_objects.push_back(object); }
 
-    bool hit(const Ray& ray, double ray_tmin, double ray_tmax, HitRecord& record) const override {
+    bool hit(const Ray& ray, Interval ray_t, HitRecord& record) const override {
         HitRecord temp_record{};
         bool hit_anything{ false };
-        double closest_so_far{ ray_tmax };
+        double closest_so_far{ ray_t.Max() };
 
         for (const auto& object : m_objects) {
-            if (object->hit(ray, ray_tmin, closest_so_far, temp_record)) {
+            Interval new_interval{ ray_t.Min(), closest_so_far };
+
+            if (object->hit(ray, new_interval, temp_record)) {
                 hit_anything = true;
                 closest_so_far = temp_record.t;
                 record = temp_record;
