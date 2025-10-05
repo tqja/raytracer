@@ -29,15 +29,26 @@ Framebuffer::Framebuffer(int w, int h)
     pixels.resize(m_width * m_height);
 }
 
+static double LinearToGamma(double linear_component) {
+    if (linear_component > 0) {
+        return std::sqrt(linear_component);
+    }
+    return 0;
+}
+
 void Framebuffer::SetPixelColour(const Colour& colour, const Point& hit_point) {
     assert(hit_point.x < m_width && "p.x must be in range of framebuffer width");
     assert(hit_point.y < m_height && "p.y must be in range of framebuffer height");
 
-    // scale unit value (0.0 - 0.1) to rgb (0 - 256)
+    double r = LinearToGamma(colour.x());
+    double g = LinearToGamma(colour.y());
+    double b = LinearToGamma(colour.z());
+
+    // scale unit value (0.0 - 1.0) to rgb (0 - 256)
     static const Interval intensity(0.000, 0.999);
-    Colour scaled_colour{ intensity.Clamp(colour.x()) * 256
-                        , intensity.Clamp(colour.y()) * 256
-                        , intensity.Clamp(colour.z()) * 256 };
+    Colour scaled_colour{ intensity.Clamp(r) * 256
+                        , intensity.Clamp(g) * 256
+                        , intensity.Clamp(b) * 256 };
 
     const int row_offset{ hit_point.y * m_width };
     pixels[row_offset + hit_point.x] = scaled_colour;
