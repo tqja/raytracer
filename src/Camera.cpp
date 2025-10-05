@@ -29,7 +29,7 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
     Interval ray_interval{ 0.001, infinity };
 
     if (world.hit(ray, ray_interval, record)) {
-        Vec3 direction{ random_on_hemisphere(record.normal) };
+        Vec3 direction{ record.normal + random_unit_vector() };
         Ray bounce_ray{ record.hit_point, direction };
         return RayColour(bounce_ray, world, depth + 1) / 2;
     }
