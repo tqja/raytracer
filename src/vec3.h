@@ -116,11 +116,11 @@ inline Vec3 unit_vector(const Vec3& v) {
 
 inline Vec3 random_unit_vector() {
     while (true) {
-        Vec3 p{ Vec3::random(-1, 1) };
-        double length_squared{ p.length_squared() };
+        Vec3 hit_point{ Vec3::random(-1, 1) };
+        double length_squared{ hit_point.length_squared() };
 
         if (1e-160 < length_squared && length_squared <= 1) {
-            return p / sqrt(length_squared);
+            return hit_point / sqrt(length_squared);
         }
     }
 }

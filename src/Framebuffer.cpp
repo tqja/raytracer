@@ -29,9 +29,9 @@ Framebuffer::Framebuffer(int w, int h)
     pixels.resize(m_width * m_height);
 }
 
-void Framebuffer::SetPixelColour(const Colour& colour, const Point& p) {
-    assert(p.x < m_width && "p.x must be in range of framebuffer width");
-    assert(p.y < m_height && "p.y must be in range of framebuffer height");
+void Framebuffer::SetPixelColour(const Colour& colour, const Point& hit_point) {
+    assert(hit_point.x < m_width && "p.x must be in range of framebuffer width");
+    assert(hit_point.y < m_height && "p.y must be in range of framebuffer height");
 
     // scale unit value (0.0 - 0.1) to rgb (0 - 256)
     static const Interval intensity(0.000, 0.999);
@@ -39,6 +39,6 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point& p) {
                         , intensity.Clamp(colour.y()) * 256
                         , intensity.Clamp(colour.z()) * 256 };
 
-    const int row_offset{ p.y * m_width };
-    pixels[row_offset + p.x] = scaled_colour;
+    const int row_offset{ hit_point.y * m_width };
+    pixels[row_offset + hit_point.x] = scaled_colour;
 }

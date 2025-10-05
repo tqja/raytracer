@@ -14,7 +14,7 @@ public:
     std::vector<Colour> GetFramebuffer() { return pixels; }
     const int& GetWidth() const { return m_width; }
     const int& GetHeight() const { return m_height; }
-    void SetPixelColour(const Colour& colour, const Point& p);
+    void SetPixelColour(const Colour& colour, const Point& hit_point);
 
 private:
     int m_width{};
