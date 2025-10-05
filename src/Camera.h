@@ -1,17 +1,19 @@
 #pragma once
 
+#include "Framebuffer.h"
+#include "Hittable.h"
+#include "HittableList.h"
 #include "Vec3.h"
 
 class Camera {
 public:
     Camera() {}
-    Camera(int image_width, int image_height, double viewport_height);
-    void update();
+    Camera(int image_width, int image_height);
 
-    const Vec3& GetCameraCenter() const { return m_camera_center; }
-    const Vec3& GetOriginPixel() const { return m_origin_pixel; }
-    const Vec3& GetPixelDeltaU() const { return m_pixel_delta_u; }
-    const Vec3& GetPixelDeltaV() const { return m_pixel_delta_v; }
+
+    void UpdateOriginPixel();
+    Framebuffer Render(HittableList world) const;
+    Colour RayColour(const Ray& ray, const Hittable& world) const;
 
     void SetCameraCenter(const Vec3& m_camera_center);
     void SetFocalLength(double focal_length);
@@ -21,10 +23,15 @@ private:
 
     int m_image_height{};
     int m_image_width{};
+
     double m_viewport_height{};
     double m_viewport_width{};
+    Vec3 m_viewport_u{};
+    Vec3 m_viewport_v{};
 
     Vec3 m_pixel_delta_u{};
     Vec3 m_pixel_delta_v{};
     Vec3 m_origin_pixel{};
+
+    static Colour LerpColours(const Colour& c1, const Colour& c2, double blend);
 };

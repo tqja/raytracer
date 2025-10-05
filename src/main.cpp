@@ -29,24 +29,6 @@ void WriteFramebufferToPng(const char* filename, const int width, const int heig
     stbi_write_png(filename, width, height, channels, image.data(), width * channels);
 }
 
-Colour LerpColours(const Colour& c1, const Colour& c2, double blend) {
-    return (1.0 - blend) * c1 + blend * c2;
-    
-}
-
-Colour RayColour(const Ray& ray, const Hittable& world) {
-    HitRecord record{};
-
-    if (world.hit(ray, 0, infinity, record)) {
-        return (record.normal + Colour(1.0, 1.0, 1.0)) / 2;
-    }
-
-    Vec3 unit_direction = unit_vector(ray.GetDirection());
-    double blend = (unit_direction.y() + 1.0) / 2;
-    return LerpColours(Colour(1.0, 1.0, 1.0), Colour(0.5, 0.7, 1.0), blend);
-
-}
-
 HittableList InitWorld() {
     HittableList world{};
 
@@ -59,39 +41,14 @@ HittableList InitWorld() {
     return world;
 }
 
-Framebuffer Render(int image_width, int image_height, const Camera& camera, HittableList world) {
-    Framebuffer framebuffer{ image_width, image_height };
-    Sphere sphere{ Vec3(0, 0, -1), 0.5 };
-
-    for (int y = 0; y < image_height; y++) {
-        std::clog << "\rScanlines remaining: " << (image_height - y) << ' ' << std::flush;
-
-        Vec3 row_start{ camera.GetOriginPixel() + (y * camera.GetPixelDeltaV()) };
-
-        for (int x = 0; x < image_width; x++) {
-            Vec3 pixel_center{ row_start + camera.GetPixelDeltaU() * x };
-            Vec3 ray_direction{ pixel_center - camera.GetCameraCenter() };
-
-            Ray ray{ camera.GetCameraCenter(), ray_direction };
-            Colour ray_colour = RayColour(ray, world);
-
-            Point current_pixel{ x, y };
-            framebuffer.SetPixelColour(ray_colour, current_pixel);
-        }
-    }
-
-    return framebuffer;
-}
-
 int main() {
     constexpr float aspect_ratio{ 16.0f / 9.0f };
-    constexpr int image_width{ 400 };
+    constexpr int image_width{ 480 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
-    constexpr double viewport_height{ 2.0 };
 
     HittableList world{ InitWorld() };
-    Camera camera{ image_width, image_height, viewport_height };
-    Framebuffer framebuffer{ Render(image_width, image_height, camera, world) };
+    Camera camera{ image_width, image_height };
+    Framebuffer framebuffer{ camera.Render(world) };
 
     WriteFramebufferToPng("image.png", image_width, image_height, framebuffer);
 
