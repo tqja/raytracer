@@ -1,6 +1,7 @@
 #include "Framebuffer.h"
 #include "Colour.h"
 #include "Geometry.h"
+#include "Interval.h"
 
 #include <cassert>
 #include <vector>
@@ -33,9 +34,10 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point& p) {
     assert(p.y < m_height && "p.y must be in range of framebuffer height");
 
     // scale unit value (0.0 - 0.1) to rgb (0 - 256)
-    Colour scaled_colour{ colour.x() * 255.999
-                        , colour.y() * 255.999
-                        , colour.z() * 255.999 };
+    static const Interval intensity(0.000, 0.999);
+    Colour scaled_colour{ intensity.Clamp(colour.x()) * 256
+                        , intensity.Clamp(colour.y()) * 256
+                        , intensity.Clamp(colour.z()) * 256 };
 
     const int row_offset{ p.y * m_width };
     pixels[row_offset + p.x] = scaled_colour;
