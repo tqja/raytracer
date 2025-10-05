@@ -42,17 +42,10 @@ Framebuffer Camera::Render(HittableList world) const {
 
     for (int y = 0; y < m_image_height; y++) {
         std::clog << "\rScanlines remaining: " << (m_image_height - y) << ' ' << std::flush;
-        Vec3 row_start{ m_origin_pixel + (y * m_pixel_delta_v) };
-
         for (int x = 0; x < m_image_width; x++) {
-            Vec3 pixel_center{ row_start + m_pixel_delta_u * x };
-            Vec3 ray_direction{ pixel_center - m_camera_center };
-
-            Ray ray{ m_camera_center, ray_direction };
-            Colour ray_colour = RayColour(ray, world);
-
             Point current_pixel{ x, y };
-            framebuffer.SetPixelColour(ray_colour, current_pixel);
+            Colour pixel_colour{ GetSampledColour(x, y, world) };
+            framebuffer.SetPixelColour(pixel_colour, current_pixel);
         }
     }
 
@@ -68,6 +61,18 @@ void Camera::UpdateOriginPixel() {
     m_origin_pixel = vp_origin + (m_pixel_delta_u + m_pixel_delta_v) / 2;
 }
 
+Ray Camera::GetRay(int i, int j) const {
+    Vec3 offset{ SampleSquare() };
+    Vec3 pixel_sample{ 
+        m_origin_pixel 
+        + ((i + offset.x()) * m_pixel_delta_u) 
+        + ((j + offset.y()) * m_pixel_delta_v)
+    };
+
+    Vec3 ray_direction{ pixel_sample - m_camera_center };
+    return Ray(m_camera_center, ray_direction);
+}
+
 void Camera::SetCameraCenter(const Vec3& camera_center) {
     m_camera_center = camera_center;
     UpdateOriginPixel();
@@ -77,8 +82,28 @@ void Camera::SetCameraCenter(const Vec3& camera_center) {
 void Camera::SetFocalLength(double focal_length) {
     m_focal_length = focal_length;
     UpdateOriginPixel();
-};
+}
+
+void Camera::SetSamplesPerPixel(int samples) {
+    m_samples_per_pixel = samples;
+    m_pixel_samples_scale = 1.0 / m_samples_per_pixel;
+}
+
+Vec3 Camera::SampleSquare() {
+    return Vec3(RandomDouble() - 0.5, RandomDouble() - 0.5, 0);
+}
 
 Colour Camera::LerpColours(const Colour& c1, const Colour& c2, double blend) {
     return (1.0 - blend) * c1 + blend * c2;
+}
+
+Colour Camera::GetSampledColour(int x, int y, const Hittable& world) const {
+    Colour pixel_colour{ 0, 0, 0 };
+
+    for (int sample = 0; sample < m_samples_per_pixel; sample++) {
+        Ray ray{ GetRay(x, y) };
+        pixel_colour += RayColour(ray, world);
+    }
+
+    return pixel_colour * m_pixel_samples_scale;
 }

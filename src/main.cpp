@@ -48,6 +48,7 @@ int main() {
 
     HittableList world{ InitWorld() };
     Camera camera{ image_width, image_height };
+    camera.SetSamplesPerPixel(100);
     Framebuffer framebuffer{ camera.Render(world) };
 
     WriteFramebufferToPng("image.png", image_width, image_height, framebuffer);
