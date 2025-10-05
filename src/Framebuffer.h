@@ -15,8 +15,6 @@ public:
     const int& GetWidth() const { return m_width; }
     const int& GetHeight() const { return m_height; }
     void SetPixelColour(const Colour& colour, const Point& p);
-    void InitDefault();
-
 
 private:
     int m_width{};

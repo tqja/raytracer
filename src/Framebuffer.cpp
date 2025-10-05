@@ -28,26 +28,6 @@ Framebuffer::Framebuffer(int w, int h)
     pixels.resize(m_width * m_height);
 }
 
-void Framebuffer::InitDefault() {
-    constexpr float b{ 0.5f };
-    for (int y = 0; y < m_height; y++) {
-        std::clog << "\rScanlines remaining: " << (m_height - y) << ' ' << std::flush;
-        float g{ static_cast<float>(y) / m_height };
-
-        for (int x = 0; x < m_width; x++) {
-            float r{ static_cast<float>(x) / m_width };
-
-            const Colour pixel_colour(
-                static_cast<int>(255.999 * r),
-                static_cast<int>(255.999 * g),
-                static_cast<int>(255.999 * b)
-            );
-
-            SetPixelColour(pixel_colour, Point(x, y));
-        }
-    }
-}
-
 void Framebuffer::SetPixelColour(const Colour& colour, const Point& p) {
     assert(p.x < m_width && "p.x must be in range of framebuffer width");
     assert(p.y < m_height && "p.y must be in range of framebuffer height");
