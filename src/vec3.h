@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include "Utility.h"
 
 class Vec3 {
 public:
@@ -43,6 +44,16 @@ public:
     double length_squared() const {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
+
+    static Vec3 random() {
+        return Vec3(RandomDouble(), RandomDouble(), RandomDouble());
+    }
+
+    static Vec3 random(double min, double max) {
+        return Vec3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
+    }
+
+
 };
 
 using Point3 = Vec3;
@@ -101,4 +112,25 @@ inline Vec3 cross(const Vec3& u, const Vec3& v) {
 
 inline Vec3 unit_vector(const Vec3& v) {
     return v / v.length();
+}
+
+inline Vec3 random_unit_vector() {
+    while (true) {
+        Vec3 p{ Vec3::random(-1, 1) };
+        double length_squared{ p.length_squared() };
+
+        if (1e-160 < length_squared && length_squared <= 1) {
+            return p / sqrt(length_squared);
+        }
+    }
+}
+
+inline Vec3 random_on_hemisphere(const Vec3& normal) {
+    Vec3 on_unit_sphere{ random_unit_vector() };
+    bool in_same_hemisphere{ dot(on_unit_sphere, normal) > 0.0 };
+
+    if (in_same_hemisphere) {
+        return on_unit_sphere;
+    }
+    return -on_unit_sphere;
 }

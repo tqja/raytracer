@@ -20,12 +20,18 @@ Camera::Camera(int image_width, int image_height) : m_image_width{ image_width }
     UpdateOriginPixel();
 }
 
-Colour Camera::RayColour(const Ray& ray, const Hittable& world) const {
+Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const {
+    if (depth >= m_max_bounce_depth) {
+        return Colour(0, 0, 0);
+    }
+
     HitRecord record{};
-    Interval ray_interval{ 0, infinity };
+    Interval ray_interval{ 0.001, infinity };
 
     if (world.hit(ray, ray_interval, record)) {
-        return (record.normal + Colour(1, 1, 1)) / 2;
+        Vec3 direction{ random_on_hemisphere(record.normal) };
+        Ray bounce_ray{ record.p, direction };
+        return RayColour(bounce_ray, world, depth + 1) / 2;
     }
 
     Vec3 unit_direction = unit_vector(ray.GetDirection());

@@ -13,12 +13,13 @@ public:
 
     void UpdateOriginPixel();
     Framebuffer Render(HittableList world) const;
-    Colour RayColour(const Ray& ray, const Hittable& world) const;
+    Colour RayColour(const Ray& ray, const Hittable& world, int depth = 0) const;
 
     Ray GetRay(int i, int j) const;
     void SetCameraCenter(const Vec3& m_camera_center);
     void SetFocalLength(double focal_length);
     void SetSamplesPerPixel(int samples);
+    void SetMaxBounceDepth(int max_bounces) { m_max_bounce_depth = max_bounces; }
 
 private:
     Vec3 m_camera_center{ 0, 0, 0 };
@@ -38,6 +39,8 @@ private:
 
     int m_samples_per_pixel{ 10 };
     double m_pixel_samples_scale{ 1.0 / m_samples_per_pixel };
+
+    int m_max_bounce_depth{ 10 };
 
     Colour GetSampledColour(int x, int y, const Hittable& world) const;
     static Vec3 SampleSquare();
