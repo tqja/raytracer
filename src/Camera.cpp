@@ -29,9 +29,13 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
     Interval ray_interval{ 0.001, infinity };
 
     if (world.hit(ray, ray_interval, record)) {
-        Vec3 direction{ record.normal + random_unit_vector() };
-        Ray bounce_ray{ record.hit_point, direction };
-        return RayColour(bounce_ray, world, depth + 1) * 0.5;
+        Ray scattered{};
+        Colour attenuation{};
+
+        if (record.material->scatter(ray, record, attenuation, scattered)) {
+            return attenuation * RayColour(scattered, world, depth + 1);
+        }
+        return Colour(0, 0, 0); // ray was absorbed
     }
 
     Vec3 unit_direction = unit_vector(ray.GetDirection());

@@ -26,6 +26,7 @@
     <ClInclude Include="src\Hittable.h" />
     <ClInclude Include="src\HittableList.h" />
     <ClInclude Include="src\Interval.h" />
+    <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\stb_image_write.h" />
     <ClInclude Include="src\Utility.h" />

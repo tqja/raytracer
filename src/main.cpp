@@ -8,6 +8,7 @@
 #include "Geometry.h"
 #include "Hittable.h"
 #include "HittableList.h"
+#include "Material.h"
 #include "Ray.h"
 #include "Utility.h"
 #include "Vec3.h"
@@ -32,11 +33,20 @@ void WriteFramebufferToPng(const char* filename, const int width, const int heig
 HittableList InitWorld() {
     HittableList world{};
 
-    Point3 p1{ 0, 0, -1 };
-    Point3 p2{ 0, -100.5, -1 };
+    Point3 p_ground{ 0, -100.5, -1 };
+    Point3 p_center{ 0, 0, -1.2 };
+    Point3 p_left{ -1.0, 0.0, -1.0 };
+    Point3 p_right{ 1.0, 0.0, -1.0 };
 
-    world.add(make_shared<Sphere>(p1, 0.5));
-    world.add(make_shared<Sphere>(p2, 100));
+    auto material_ground = make_shared<Lambertian>(Colour(0.8, 0.8, 0.6));
+    auto material_center = make_shared<Lambertian>(Colour(0.1, 0.2, 0.5));
+    auto material_left = make_shared<Metal>(Colour(0.8, 0.8, 0.8));
+    auto material_right = make_shared<Metal>(Colour(0.8, 0.6, 0.2));
+
+    world.add(make_shared<Sphere>(p_ground, 100, material_ground));
+    world.add(make_shared<Sphere>(p_center, 0.5, material_center));
+    world.add(make_shared<Sphere>(p_left, 0.5, material_left));
+    world.add(make_shared<Sphere>(p_right, 0.5, material_right));
 
     return world;
 }
