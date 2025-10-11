@@ -4,6 +4,8 @@
 #include "Ray.h"
 #include "Vec3.h"
 #include "Colour.h"
+#include "ColourConstants.h"
+
 
 class Material {
 public:
@@ -16,6 +18,7 @@ public:
     }
 
 };
+
 
 class Lambertian : public Material {
 public:
@@ -38,6 +41,7 @@ public:
 private:
     Colour m_albedo{};
 };
+
 
 class Metal : public Material {
 public:

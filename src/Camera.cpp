@@ -5,6 +5,7 @@
 #include "Hittable.h"
 #include "HittableList.h"
 #include "Utility.h"
+#include "ColourConstants.h"
 
 Camera::Camera(int image_width, int image_height) : m_image_width{ image_width }, m_image_height{ image_height } {
     m_viewport_height = 2.0;
@@ -22,7 +23,7 @@ Camera::Camera(int image_width, int image_height) : m_image_width{ image_width }
 
 Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const {
     if (depth >= m_max_bounce_depth) {
-        return Colour(0, 0, 0);
+        return Colours::black;
     }
 
     HitRecord record{};
@@ -35,13 +36,13 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
         if (record.material->scatter(ray, record, attenuation, scattered)) {
             return attenuation * RayColour(scattered, world, depth + 1);
         }
-        return Colour(0, 0, 0); // ray was absorbed
+        return Colours::black; // ray was absorbed
     }
 
     Vec3 unit_direction = unit_vector(ray.GetDirection());
     double blend{ (unit_direction.y() + 1.0) / 2 };
 
-    Colour c1{ 1.0, 1.0, 1.0 };
+    Colour c1{ Colours::white };
     Colour c2{ 0.5, 0.7, 1.0 };
 
     return LerpColours(c1, c2, blend);
@@ -108,7 +109,7 @@ Colour Camera::LerpColours(const Colour& c1, const Colour& c2, double blend) {
 }
 
 Colour Camera::GetSampledColour(int x, int y, const Hittable& world) const {
-    Colour pixel_colour{ 0, 0, 0 };
+    Colour pixel_colour{ Colours::black };
 
     for (int sample = 0; sample < m_samples_per_pixel; sample++) {
         Ray ray{ GetRay(x, y) };
