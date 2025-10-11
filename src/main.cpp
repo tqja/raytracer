@@ -38,14 +38,16 @@ HittableList InitWorld() {
     Point3 p_left{ -1.0, 0.0, -1.0 };
     Point3 p_right{ 1.0, 0.0, -1.0 };
 
-    auto material_ground = make_shared<Lambertian>(Colour(0.8, 0.8, 0.6));
-    auto material_center = make_shared<Lambertian>(Colour(0.1, 0.2, 0.5));
-    auto material_left = make_shared<Dielectric>(1.00 / 1.33);
-    auto material_right = make_shared<Metal>(Colour(0.8, 0.6, 0.2), 1.0);
+    auto material_ground{ make_shared<Lambertian>(Colour(0.4, 0.4, 0.3)) };
+    auto material_center{ make_shared<Lambertian>(Colour(0.1, 0.2, 0.5)) };
+    auto material_left{ make_shared<Dielectric>(1.50) };
+    auto material_bubble{ make_shared<Dielectric>(1.00 / 1.50) };
+    auto material_right{ make_shared<Metal>(Colour(0.8, 0.6, 0.2), 0.2) };
 
     world.add(make_shared<Sphere>(p_ground, 100, material_ground));
     world.add(make_shared<Sphere>(p_center, 0.5, material_center));
     world.add(make_shared<Sphere>(p_left, 0.5, material_left));
+    world.add(make_shared<Sphere>(p_left, 0.4, material_bubble));
     world.add(make_shared<Sphere>(p_right, 0.5, material_right));
 
     return world;
@@ -53,7 +55,7 @@ HittableList InitWorld() {
 
 int main() {
     constexpr float aspect_ratio{ 16.0f / 9.0f };
-    constexpr int image_width{ 480 };
+    constexpr int image_width{ 1200 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
 
     HittableList world{ InitWorld() };
