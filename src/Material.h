@@ -51,4 +51,6 @@ public:
 
 private:
     double m_refraction_index;
+
+    static double Reflectance(double cosine, double refraction_index);
 };

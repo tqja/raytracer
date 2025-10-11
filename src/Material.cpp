@@ -33,8 +33,25 @@ bool Dielectric::scatter(
     double ri = record.front_face ? (1.0 / m_refraction_index) : m_refraction_index;
 
     Vec3 unit_direction = unit_vector(ray_in.GetDirection());
-    Vec3 refracted = refract(unit_direction, record.normal, ri);
+    double cos_theta = std::fmin(dot(-unit_direction, record.normal), 1.0);
+    double sin_theta = std::sqrt(1.0 - cos_theta * cos_theta);
 
-    scattered = Ray(record.hit_point, refracted);
+    bool cannot_refract = ri * sin_theta > 1.0;
+    Vec3 direction{};
+
+    if (cannot_refract || Reflectance(cos_theta, ri) > RandomDouble()) {
+        direction = reflect(unit_direction, record.normal);
+    }
+    else {
+        direction = refract(unit_direction, record.normal, ri);
+    }
+
+    scattered = Ray(record.hit_point, direction);
     return true;  // dielectric always refracts
+}
+
+double Dielectric::Reflectance(double cosine, double refraction_index) {
+    double r0 = (1 - refraction_index) / (1 + refraction_index);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * std::pow((1 - cosine), 5);
 }
