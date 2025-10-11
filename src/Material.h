@@ -66,3 +66,25 @@ private:
     Colour m_albedo{};
     double m_fuzz{};
 };
+
+
+class Dielectric : public Material {
+public:
+    Dielectric(double refraction_index) : m_refraction_index(refraction_index) {}
+
+    bool scatter(
+        const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
+    ) const override {
+        attenuation = Colours::white;
+        double ri = record.front_face ? (1.0 / m_refraction_index) : m_refraction_index;
+        
+        Vec3 unit_direction = unit_vector(ray_in.GetDirection());
+        Vec3 refracted = refract(unit_direction, record.normal, ri);
+
+        scattered = Ray(record.hit_point, refracted);
+        return true;  // dielectric always refracts
+    }
+
+private:
+    double m_refraction_index;
+};

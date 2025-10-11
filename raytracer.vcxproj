@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Colour.h" />
+    <ClInclude Include="src\ColourConstants.h" />
     <ClInclude Include="src\Framebuffer.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\Hittable.h" />
