@@ -33,7 +33,7 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
         Ray scattered{};
         Colour attenuation{};
 
-        if (record.material->scatter(ray, record, attenuation, scattered)) {
+        if (record.material->Scatter(ray, record, attenuation, scattered)) {
             return attenuation * RayColour(scattered, world, depth + 1);
         }
         return Colours::black; // ray was absorbed

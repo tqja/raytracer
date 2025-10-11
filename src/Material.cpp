@@ -1,6 +1,6 @@
 #include "Material.h"
 
-bool Lambertian::scatter(
+bool Lambertian::Scatter(
     const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
 ) const {
     Vec3 scatter_direction = record.normal + random_unit_vector();
@@ -14,7 +14,7 @@ bool Lambertian::scatter(
     return true;
 }
 
-bool Metal::scatter(
+bool Metal::Scatter(
     const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
 ) const {
     Vec3 reflected{ reflect(ray_in.GetDirection(), record.normal) };
@@ -26,7 +26,7 @@ bool Metal::scatter(
     return above_surface;
 }
 
-bool Dielectric::scatter(
+bool Dielectric::Scatter(
     const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
 ) const {
     attenuation = Colours::white;
