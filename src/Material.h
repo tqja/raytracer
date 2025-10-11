@@ -24,19 +24,7 @@ class Lambertian : public Material {
 public:
     Lambertian(const Colour& albedo) : m_albedo(albedo) {};
 
-    bool scatter(
-        const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
-    ) const override {
-        Vec3 scatter_direction = record.normal + random_unit_vector();
-
-        if (scatter_direction.near_zero()) {
-            scatter_direction = record.normal;
-        }
-
-        scattered = Ray(record.hit_point, scatter_direction);
-        attenuation = m_albedo;
-        return true;
-    }
+    bool scatter(const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered) const override;
 
 private:
     Colour m_albedo{};
@@ -45,22 +33,9 @@ private:
 
 class Metal : public Material {
 public:
-    Metal(const Colour& albedo, double fuzz) 
-        : m_albedo(albedo),
-          m_fuzz(fuzz < 1 ? fuzz : 1) {
-    }
+    Metal(const Colour& albedo, double fuzz) : m_albedo(albedo), m_fuzz(fuzz < 1 ? fuzz : 1) {}
 
-    bool scatter(
-        const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
-    ) const override {
-        Vec3 reflected{ reflect(ray_in.GetDirection(), record.normal) };
-        reflected = unit_vector(reflected) + m_fuzz * random_unit_vector();
-        scattered = Ray(record.hit_point, reflected);
-        attenuation = m_albedo;       
-
-        bool above_surface{ dot(scattered.GetDirection(), record.normal) > 0 };
-        return above_surface;
-    }
+    bool scatter(const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered) const override;
 
 private:
     Colour m_albedo{};
@@ -72,18 +47,7 @@ class Dielectric : public Material {
 public:
     Dielectric(double refraction_index) : m_refraction_index(refraction_index) {}
 
-    bool scatter(
-        const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
-    ) const override {
-        attenuation = Colours::white;
-        double ri = record.front_face ? (1.0 / m_refraction_index) : m_refraction_index;
-        
-        Vec3 unit_direction = unit_vector(ray_in.GetDirection());
-        Vec3 refracted = refract(unit_direction, record.normal, ri);
-
-        scattered = Ray(record.hit_point, refracted);
-        return true;  // dielectric always refracts
-    }
+    bool scatter(const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered) const override;
 
 private:
     double m_refraction_index;

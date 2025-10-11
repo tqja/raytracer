@@ -38,6 +38,7 @@
     <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\stb_write_impl.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
