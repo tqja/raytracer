@@ -8,30 +8,28 @@
 class Camera {
 public:
     Camera() {}
-    Camera(int image_width, int image_height);
+    Camera(int image_width, int image_height, double fov);
 
 
-    void UpdateOriginPixel();
+    void Update();
     Framebuffer Render(HittableList world) const;
     Colour RayColour(const Ray& ray, const Hittable& world, int depth = 0) const;
 
     Ray GetRay(int i, int j) const;
-    void SetCameraCenter(const Vec3& m_camera_center);
-    void SetFocalLength(double focal_length);
+    void SetCameraCenter(const Point3& m_camera_center);
+    void SetCameraTarget(const Point3& m_camera_center);
     void SetSamplesPerPixel(int samples);
     void SetMaxBounceDepth(int max_bounces) { m_max_bounce_depth = max_bounces; }
+    void SetFOV(double fov) { m_horizontal_fov = fov; }
 
 private:
     Vec3 m_camera_center{ 0, 0, 0 };
-    double m_focal_length{ 1.0 };
+    Vec3 m_camera_target{ 0, 0, -1 };
+    Vec3 m_vup{ 0, 1, 0 };
 
     int m_image_height{};
     int m_image_width{};
-
-    double m_viewport_height{};
-    double m_viewport_width{};
-    Vec3 m_viewport_u{};
-    Vec3 m_viewport_v{};
+    double m_horizontal_fov{};
 
     Vec3 m_pixel_delta_u{};
     Vec3 m_pixel_delta_v{};

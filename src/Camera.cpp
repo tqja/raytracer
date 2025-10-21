@@ -7,18 +7,8 @@
 #include "Utility.h"
 #include "ColourConstants.h"
 
-Camera::Camera(int image_width, int image_height) : m_image_width{ image_width }, m_image_height{ image_height } {
-    m_viewport_height = 2.0;
-    // use actual ratio instead of "ideal" ratio for calculation
-    m_viewport_width = m_viewport_height * (double(m_image_width) / m_image_height);
-
-    m_viewport_u = Vec3(m_viewport_width, 0, 0);
-    m_viewport_v = Vec3(0, -m_viewport_height, 0);
-
-    m_pixel_delta_u = m_viewport_u / m_image_width;
-    m_pixel_delta_v = m_viewport_v / m_image_height;
-
-    UpdateOriginPixel();
+Camera::Camera(int image_width, int image_height, double fov) : m_image_width{ image_width }, m_image_height{ image_height }, m_horizontal_fov{ fov } {
+    Update();
 }
 
 Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const {
@@ -63,13 +53,32 @@ Framebuffer Camera::Render(HittableList world) const {
     return framebuffer;
 }
 
-void Camera::UpdateOriginPixel() {
+void Camera::Update() {
+    double focal_length = (m_camera_center - m_camera_target).length();
+    double fov_angle{ DegToRads(m_horizontal_fov) };
+    double h{ std::tan(fov_angle / 2) };
+
+    double viewport_width = 2 * h * focal_length;
+    // use actual ratio instead of "ideal" ratio for calculation
+    double viewport_height = viewport_width / (double(m_image_width) / m_image_height);
+
+    Vec3 w{ unit_vector(m_camera_center - m_camera_target) };
+    Vec3 u{ unit_vector(cross(m_vup, w)) };
+    Vec3 v{ cross(w, u) };
+
+    Vec3 viewport_u{ viewport_width * u };
+    Vec3 viewport_v{ viewport_height * -v };
+
+    m_pixel_delta_u = viewport_u / m_image_width;
+    m_pixel_delta_v = viewport_v / m_image_height;
+
     const Vec3 vp_origin = m_camera_center
-        - Vec3(0, 0, m_focal_length)
-        - m_viewport_u / 2 - m_viewport_v / 2;
+        - focal_length * w
+        - viewport_u / 2
+        - viewport_v / 2;
 
     // the pixel grid is inset by 0.5px from the viewport, so must add half a pixel in both axes
-    m_origin_pixel = vp_origin + (m_pixel_delta_u + m_pixel_delta_v) / 2;
+    m_origin_pixel = vp_origin + 0.5 * (m_pixel_delta_u + m_pixel_delta_v);
 }
 
 Ray Camera::GetRay(int i, int j) const {
@@ -84,15 +93,14 @@ Ray Camera::GetRay(int i, int j) const {
     return Ray(m_camera_center, ray_direction);
 }
 
-void Camera::SetCameraCenter(const Vec3& camera_center) {
-    m_camera_center = camera_center;
-    UpdateOriginPixel();
+void Camera::SetCameraCenter(const Point3& look_from) {
+    m_camera_center = look_from;
+    Update();
 }
 
-
-void Camera::SetFocalLength(double focal_length) {
-    m_focal_length = focal_length;
-    UpdateOriginPixel();
+void Camera::SetCameraTarget(const Point3& look_at) {
+    m_camera_target = look_at;
+    Update();
 }
 
 void Camera::SetSamplesPerPixel(int samples) {
