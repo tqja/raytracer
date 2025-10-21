@@ -37,24 +37,24 @@ public:
         return *this *= 1 / t;
     }
 
-    double length() const {
-        return std::sqrt(length_squared());
+    double Length() const {
+        return std::sqrt(LengthSquared());
     }
 
-    double length_squared() const {
+    double LengthSquared() const {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
 
-    bool near_zero() const {
+    bool NearZero() const {
         auto s = 1e-8;
         return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) && (std::fabs(e[2]) < s);
     }
 
-    static Vec3 random() {
+    static Vec3 Random() {
         return Vec3(RandomDouble(), RandomDouble(), RandomDouble());
     }
 
-    static Vec3 random(double min, double max) {
+    static Vec3 Random(double min, double max) {
         return Vec3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
     }
 
@@ -103,36 +103,36 @@ inline Vec3 operator/(const Vec3& v, double t) {
     return (1 / t) * v;
 }
 
-inline double dot(const Vec3& u, const Vec3& v) {
+inline double Dot(const Vec3& u, const Vec3& v) {
     return u.e[0] * v.e[0]
         + u.e[1] * v.e[1]
         + u.e[2] * v.e[2];
 }
 
-inline Vec3 cross(const Vec3& u, const Vec3& v) {
+inline Vec3 Cross(const Vec3& u, const Vec3& v) {
     return Vec3(u.e[1] * v.e[2] - u.e[2] * v.e[1],
         u.e[2] * v.e[0] - u.e[0] * v.e[2],
         u.e[0] * v.e[1] - u.e[1] * v.e[0]);
 }
 
-inline Vec3 unit_vector(const Vec3& v) {
-    return v / v.length();
+inline Vec3 UnitVector(const Vec3& v) {
+    return v / v.Length();
 }
 
-inline Vec3 random_unit_vector() {
+inline Vec3 RandomUnitVector() {
     while (true) {
-        Vec3 hit_point{ Vec3::random(-1, 1) };
-        double length_squared{ hit_point.length_squared() };
+        Vec3 hit_point{ Vec3::Random(-1, 1) };
+        double LengthSquared{ hit_point.LengthSquared() };
 
-        if (1e-160 < length_squared && length_squared <= 1) {
-            return hit_point / sqrt(length_squared);
+        if (1e-160 < LengthSquared && LengthSquared <= 1) {
+            return hit_point / sqrt(LengthSquared);
         }
     }
 }
 
-inline Vec3 random_on_hemisphere(const Vec3& normal) {
-    Vec3 on_unit_sphere{ random_unit_vector() };
-    bool in_same_hemisphere{ dot(on_unit_sphere, normal) > 0.0 };
+inline Vec3 RandomOnHemisphere(const Vec3& normal) {
+    Vec3 on_unit_sphere{ RandomUnitVector() };
+    bool in_same_hemisphere{ Dot(on_unit_sphere, normal) > 0.0 };
 
     if (in_same_hemisphere) {
         return on_unit_sphere;
@@ -140,13 +140,13 @@ inline Vec3 random_on_hemisphere(const Vec3& normal) {
     return -on_unit_sphere;
 }
 
-inline Vec3 reflect(const Vec3& v, const Vec3& normal) {
-    return v - 2 * dot(v, normal) * normal;
+inline Vec3 Reflect(const Vec3& v, const Vec3& normal) {
+    return v - 2 * Dot(v, normal) * normal;
 }
 
-inline Vec3 refract(const Vec3& uv, const Vec3& n, double etai_over_etat) {
-    double cos_theta = std::fmin(dot(-uv, n), 1.0);
+inline Vec3 Refract(const Vec3& uv, const Vec3& n, double etai_over_etat) {
+    double cos_theta = std::fmin(Dot(-uv, n), 1.0);
     Vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
-    Vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.length_squared())) * n;
+    Vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.LengthSquared())) * n;
     return r_out_perp + r_out_parallel;
 }

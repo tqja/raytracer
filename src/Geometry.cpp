@@ -6,9 +6,9 @@ bool Sphere::hit(const Ray& ray, Interval ray_t, HitRecord& record) const {
     Vec3 dir = ray.GetDirection();
 
     // h == b/-2 allowing a simplification of the quadratic
-    double a{ dir.length_squared() };
-    double h{ dot(dir, oc) };
-    double c{ oc.length_squared() - m_radius * m_radius };
+    double a{ dir.LengthSquared() };
+    double h{ Dot(dir, oc) };
+    double c{ oc.LengthSquared() - m_radius * m_radius };
 
     double discriminant{ h * h - a * c };
     if (discriminant < 0) {

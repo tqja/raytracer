@@ -29,7 +29,7 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
         return Colours::black; // ray was absorbed
     }
 
-    Vec3 unit_direction = unit_vector(ray.GetDirection());
+    Vec3 unit_direction = UnitVector(ray.GetDirection());
     double blend{ (unit_direction.y() + 1.0) / 2 };
 
     Colour c1{ Colours::white };
@@ -54,7 +54,7 @@ Framebuffer Camera::Render(HittableList world) const {
 }
 
 void Camera::Update() {
-    double focal_length = (m_camera_center - m_camera_target).length();
+    double focal_length = (m_camera_center - m_camera_target).Length();
     double fov_angle{ DegToRads(m_horizontal_fov) };
     double h{ std::tan(fov_angle / 2) };
 
@@ -62,9 +62,9 @@ void Camera::Update() {
     // use actual ratio instead of "ideal" ratio for calculation
     double viewport_height = viewport_width / (double(m_image_width) / m_image_height);
 
-    Vec3 w{ unit_vector(m_camera_center - m_camera_target) };
-    Vec3 u{ unit_vector(cross(m_vup, w)) };
-    Vec3 v{ cross(w, u) };
+    Vec3 w{ UnitVector(m_camera_center - m_camera_target) };
+    Vec3 u{ UnitVector(Cross(m_vup, w)) };
+    Vec3 v{ Cross(w, u) };
 
     Vec3 viewport_u{ viewport_width * u };
     Vec3 viewport_v{ viewport_height * -v };
