@@ -57,15 +57,17 @@ int main() {
     constexpr float aspect_ratio{ 16.0f / 9.0f };
     constexpr int image_width{ 400 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
-    constexpr double fov{ 120 };
+    constexpr double fov{ 34 };
 
     HittableList world{ InitWorld() };
     
     Camera camera{ image_width, image_height, fov };
-    camera.SetSamplesPerPixel(10);
+    camera.SetSamplesPerPixel(100);
     camera.SetMaxBounceDepth(50);
     camera.SetCameraCenter(Point3(-2, 2, 1));
     camera.SetCameraTarget(Point3(0, 0, -1));
+    camera.SetDefocusAngle(10.0);
+    camera.SetFocusDistance(3.4);
 
     Framebuffer framebuffer{ camera.Render(world) };
 

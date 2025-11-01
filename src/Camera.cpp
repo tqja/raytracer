@@ -54,11 +54,10 @@ Framebuffer Camera::Render(HittableList world) const {
 }
 
 void Camera::Update() {
-    double focal_length = (m_camera_center - m_camera_target).Length();
     double fov_angle{ DegToRads(m_horizontal_fov) };
     double h{ std::tan(fov_angle / 2) };
 
-    double viewport_width = 2 * h * focal_length;
+    double viewport_width = 2 * h * m_focus_distance;
     // use actual ratio instead of "ideal" ratio for calculation
     double viewport_height = viewport_width / (double(m_image_width) / m_image_height);
 
@@ -73,12 +72,20 @@ void Camera::Update() {
     m_pixel_delta_v = viewport_v / m_image_height;
 
     const Vec3 vp_origin = m_camera_center
-        - focal_length * w
+        - m_focus_distance * w
         - viewport_u / 2
         - viewport_v / 2;
 
     // the pixel grid is inset by 0.5px from the viewport, so must add half a pixel in both axes
     m_origin_pixel = vp_origin + 0.5 * (m_pixel_delta_u + m_pixel_delta_v);
+
+    double defocus_radius{ 
+        m_focus_distance
+        * std::tan(DegToRads(m_defocus_angle / 2))
+    };
+
+    m_defocus_disk_u = u * defocus_radius;
+    m_defocus_disk_v = v * defocus_radius;
 }
 
 Ray Camera::GetRay(int i, int j) const {
@@ -89,8 +96,9 @@ Ray Camera::GetRay(int i, int j) const {
         + ((j + offset.y()) * m_pixel_delta_v)
     };
 
-    Vec3 ray_direction{ pixel_sample - m_camera_center };
-    return Ray(m_camera_center, ray_direction);
+    Vec3 ray_origin{ m_defocus_angle <= 0 ? m_camera_center : DefocusDiskSample() };
+    Vec3 ray_direction{ pixel_sample - ray_origin };
+    return Ray(ray_origin, ray_direction);
 }
 
 void Camera::SetCameraCenter(const Point3& look_from) {
@@ -103,6 +111,16 @@ void Camera::SetCameraTarget(const Point3& look_at) {
     Update();
 }
 
+void Camera::SetDefocusAngle(double angle) { 
+    m_defocus_angle = angle;
+    Update();
+}
+
+void Camera::SetFocusDistance(double distance) { 
+    m_focus_distance = distance;
+    Update();
+}
+
 void Camera::SetSamplesPerPixel(int samples) {
     m_samples_per_pixel = samples;
     m_pixel_samples_scale = 1.0 / m_samples_per_pixel;
@@ -110,6 +128,11 @@ void Camera::SetSamplesPerPixel(int samples) {
 
 Vec3 Camera::SampleSquare() {
     return Vec3(RandomDouble() - 0.5, RandomDouble() - 0.5, 0);
+}
+
+Point3 Camera::DefocusDiskSample() const {
+    Vec3 p{ RandomInUnitDisk() };
+    return m_camera_center + p[0] * m_defocus_disk_u + p[1] * m_defocus_disk_v;
 }
 
 Colour Camera::LerpColours(const Colour& c1, const Colour& c2, double blend) {

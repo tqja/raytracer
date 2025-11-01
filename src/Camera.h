@@ -10,22 +10,29 @@ public:
     Camera() {}
     Camera(int image_width, int image_height, double fov);
 
-
     void Update();
     Framebuffer Render(HittableList world) const;
     Colour RayColour(const Ray& ray, const Hittable& world, int depth = 0) const;
+    Point3 DefocusDiskSample() const;
 
-    Ray GetRay(int i, int j) const;
+    Ray  GetRay(int i, int j) const;
     void SetCameraCenter(const Point3& m_camera_center);
     void SetCameraTarget(const Point3& m_camera_center);
     void SetSamplesPerPixel(int samples);
     void SetMaxBounceDepth(int max_bounces) { m_max_bounce_depth = max_bounces; }
     void SetFOV(double fov) { m_horizontal_fov = fov; }
+    void SetDefocusAngle(double angle);
+    void SetFocusDistance(double distance);
 
 private:
     Vec3 m_camera_center{ 0, 0, 0 };
     Vec3 m_camera_target{ 0, 0, -1 };
     Vec3 m_vup{ 0, 1, 0 };
+
+    double m_defocus_angle{ 0 };
+    double m_focus_distance{ 10 };
+    Vec3 m_defocus_disk_u{};
+    Vec3 m_defocus_disk_v{};
 
     int m_image_height{};
     int m_image_width{};
