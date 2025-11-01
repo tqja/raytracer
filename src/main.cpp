@@ -30,44 +30,69 @@ void WriteFramebufferToPng(const char* filename, const int width, const int heig
     stbi_write_png(filename, width, height, channels, image.data(), width * channels);
 }
 
+shared_ptr<Material> RandomMaterial() {
+    auto choose_mat{ RandomDouble() };
+
+    if (choose_mat < 0.8) {
+        auto albedo{ Colour::Random() * Colour::Random() };
+        return make_shared<Lambertian>(albedo);
+    }
+
+    if (choose_mat < 0.95) {
+        auto albedo{ Colour::Random(0.5, 1) };
+        auto fuzz{ RandomDouble(0, 0.5) };
+        return make_shared<Metal>(albedo, fuzz);
+    }
+
+    return make_shared<Dielectric>(1.5);
+}
+
 HittableList InitWorld() {
     HittableList world{};
 
-    Point3 p_ground{ 0, -100.5, -1 };
-    Point3 p_center{ 0, 0, -1.2 };
-    Point3 p_left{ -1.0, 0.0, -1.0 };
-    Point3 p_right{ 1.0, 0.0, -1.0 };
+    auto material_ground{ make_shared<Lambertian>(Colour(0.5, 0.5, 0.5)) };
+    Point3 p_ground{ 0, -1000, 0 };
+    world.add(make_shared<Sphere>(p_ground, 1000, material_ground));
 
-    auto material_ground{ make_shared<Lambertian>(Colour(0.4, 0.4, 0.3)) };
-    auto material_center{ make_shared<Lambertian>(Colour(0.1, 0.2, 0.5)) };
-    auto material_left{ make_shared<Dielectric>(1.50) };
-    auto material_bubble{ make_shared<Dielectric>(1.00 / 1.50) };
-    auto material_right{ make_shared<Metal>(Colour(0.8, 0.6, 0.2), 0.2) };
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            Point3 random_center{ a + 0.9 * RandomDouble(), 0.2, b + 0.9 * RandomDouble() };
+            if ((random_center - Point3(4, 0.2, 0)).Length() > 0.9) {
+                world.add(make_shared<Sphere>(random_center, 0.2, RandomMaterial()));
+            }
+        }
+    }
 
-    world.add(make_shared<Sphere>(p_ground, 100, material_ground));
-    world.add(make_shared<Sphere>(p_center, 0.5, material_center));
-    world.add(make_shared<Sphere>(p_left, 0.5, material_left));
-    world.add(make_shared<Sphere>(p_left, 0.4, material_bubble));
-    world.add(make_shared<Sphere>(p_right, 0.5, material_right));
+    Point3 p_diffuse{ -4, 1, 0 };
+    Point3 p_glass{ 0, 1, 0 };
+    Point3 p_metal{ 4, 1, 0 };
+
+    auto material_diffuse{ make_shared<Lambertian>(Colour(0.1, 0.2, 0.5)) };
+    auto material_glass{ make_shared<Dielectric>(1.50) };
+    auto material_metal{ make_shared<Metal>(Colour(0.7, 0.6, 0.5), 0.0) };
+
+    world.add(make_shared<Sphere>(p_diffuse, 1.0, material_diffuse));
+    world.add(make_shared<Sphere>(p_glass, 1.0, material_glass));
+    world.add(make_shared<Sphere>(p_metal, 1.0, material_metal));
 
     return world;
 }
 
 int main() {
-    constexpr float aspect_ratio{ 16.0f / 9.0f };
-    constexpr int image_width{ 400 };
+    constexpr float aspect_ratio{ 16.0 / 9.0 };
+    constexpr int image_width{ 1200 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
     constexpr double fov{ 34 };
 
     HittableList world{ InitWorld() };
     
     Camera camera{ image_width, image_height, fov };
-    camera.SetSamplesPerPixel(100);
+    camera.SetSamplesPerPixel(500);
     camera.SetMaxBounceDepth(50);
-    camera.SetCameraCenter(Point3(-2, 2, 1));
-    camera.SetCameraTarget(Point3(0, 0, -1));
-    camera.SetDefocusAngle(10.0);
-    camera.SetFocusDistance(3.4);
+    camera.SetCameraCenter(Point3(13, 2, 3));
+    camera.SetCameraTarget(Point3(0, 0, 0));
+    camera.SetDefocusAngle(0.6);
+    camera.SetFocusDistance(10.0);
 
     Framebuffer framebuffer{ camera.Render(world) };
 
