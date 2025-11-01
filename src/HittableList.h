@@ -19,7 +19,7 @@ public:
     void clear() { m_objects.clear(); }
     void add(shared_ptr<Hittable> object) { m_objects.push_back(object); }
 
-    bool hit(const Ray& ray, Interval ray_t, HitRecord& record) const override {
+    bool hit(const Ray& ray, const Interval& ray_t, HitRecord& record) const override {
         HitRecord temp_record{};
         bool hit_anything{ false };
         double closest_so_far{ ray_t.Max() };

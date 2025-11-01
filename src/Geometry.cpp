@@ -1,7 +1,7 @@
 #include "Geometry.h"
 #include <cmath>
 
-bool Sphere::hit(const Ray& ray, Interval ray_t, HitRecord& record) const {
+bool Sphere::hit(const Ray& ray, const Interval& ray_t, HitRecord& record) const {
     Vec3 oc = m_center - ray.GetOrigin();
     Vec3 dir = ray.GetDirection();
 

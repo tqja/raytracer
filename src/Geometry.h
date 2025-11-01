@@ -19,7 +19,7 @@ public:
           m_material(material) {
     };
 
-    bool hit(const Ray&, Interval ray_t, HitRecord& record) const override;
+    bool hit(const Ray&, const Interval& ray_t, HitRecord& record) const override;
 
     const Point3& GetCenter() const { return m_center; }
     const double& GetRadius() const { return m_radius; }

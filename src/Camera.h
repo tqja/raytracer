@@ -11,11 +11,11 @@ public:
     Camera(int image_width, int image_height, double fov);
 
     void Update();
-    Framebuffer Render(HittableList world) const;
+    Framebuffer Render(const HittableList& world) const;
     Colour RayColour(const Ray& ray, const Hittable& world, int depth = 0) const;
     Point3 DefocusDiskSample() const;
 
-    Ray  GetRay(int i, int j) const;
+    Ray GetRay(int i, int j) const;
     void SetCameraCenter(const Point3& m_camera_center);
     void SetCameraTarget(const Point3& m_camera_center);
     void SetSamplesPerPixel(int samples);

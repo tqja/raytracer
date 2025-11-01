@@ -15,7 +15,7 @@
 #include "stb_image_write.h"
 
 
-void WriteFramebufferToPng(const char* filename, const int width, const int height, Framebuffer framebuffer) {
+void WriteFramebufferToPng(const char* filename, const int width, const int height, const Framebuffer framebuffer) {
     constexpr int channels{ 3 };
     std::vector<uint8_t> image(width * height * channels);
     std::vector<Colour> pixels{ framebuffer.GetFramebuffer() };

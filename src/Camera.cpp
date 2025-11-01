@@ -38,7 +38,7 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
     return LerpColours(c1, c2, blend);
 }
 
-Framebuffer Camera::Render(HittableList world) const {
+Framebuffer Camera::Render(const HittableList& world) const {
     Framebuffer framebuffer{ m_image_width, m_image_height };
 
     for (int y = 0; y < m_image_height; y++) {
