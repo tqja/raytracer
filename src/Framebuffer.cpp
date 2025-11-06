@@ -51,5 +51,5 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point& hit_point) {
                         , intensity.Clamp(b) * 256 };
 
     const int row_offset{ hit_point.y * m_width };
-    pixels[row_offset + hit_point.x] = scaled_colour;
+     pixels[row_offset + hit_point.x] = scaled_colour;
 }
