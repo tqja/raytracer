@@ -78,23 +78,22 @@ HittableList InitWorld() {
 
 int main() {
     constexpr float aspect_ratio{ 16.0 / 9.0 };
-    constexpr int image_width{ 1200 };
+    constexpr int image_width{ 1920 };
     constexpr int image_height{ static_cast<int>(image_width / aspect_ratio) };
     constexpr double fov{ 34 };
 
     HittableList world{ InitWorld() };
     
     Camera camera{ image_width, image_height, fov };
-    camera.SetSamplesPerPixel(500);
-    camera.SetMaxBounceDepth(50);
+    camera.SetSamplesPerPixel(10);
+    camera.SetMaxBounceDepth(20);
     camera.SetCameraCenter(Point3(13, 2, 3));
     camera.SetCameraTarget(Point3(0, 0, 0));
     camera.SetDefocusAngle(0.6);
     camera.SetFocusDistance(10.0);
 
     Framebuffer framebuffer{ camera.Render(world) };
-
-    WriteFramebufferToPng("image.png", image_width, image_height, framebuffer);
+    WriteFramebufferToPng("image.png", image_width, image_height, framebuffer.GetPixels());
 
     return 0;
 }
