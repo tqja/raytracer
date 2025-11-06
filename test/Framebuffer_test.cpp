@@ -43,15 +43,15 @@ TEST_F(FramebufferTest, SetPixelColourShouldUpdateSpecifiedPixel) {
 
     framebuffer.SetPixelColour(colour, middle);
 
-    const auto pixels = framebuffer.GetFramebuffer();
+    const auto pixels = framebuffer.GetPixels();
     EXPECT_EQ(pixels[middle.y * framebuffer.GetWidth() + middle.x], colour);
 }
 
 TEST_F(FramebufferTest, SetPixelColourShouldNotAffectOtherPixels) {
-    auto before = framebuffer.GetFramebuffer();
+    auto before = framebuffer.GetPixels();
 
     framebuffer.SetPixelColour(colour, middle);
-    auto after = framebuffer.GetFramebuffer();
+    auto after = framebuffer.GetPixels();
 
 
     for (int y = 0; y < height; ++y) {
@@ -73,7 +73,7 @@ TEST_F(FramebufferTest, SetPixelColourShouldWorkAtCorners) {
     framebuffer.SetPixelColour(colour, top_left);
     framebuffer.SetPixelColour(colour, bottom_right);
 
-    const auto pixels = framebuffer.GetFramebuffer();
+    const auto pixels = framebuffer.GetPixels();
     EXPECT_EQ(pixels[0], colour);
     EXPECT_EQ(pixels.back(), colour);
 }

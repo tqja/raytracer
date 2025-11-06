@@ -40,14 +40,21 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
 
 Framebuffer Camera::Render(const HittableList& world) const {
     Framebuffer framebuffer{ m_image_width, m_image_height };
-
+    Timer timer;
+    auto prev{ timer.elapsed() };
+    auto now{ timer.elapsed() };
     for (int y = 0; y < m_image_height; y++) {
-        std::clog << "\rScanlines remaining: " << (m_image_height - y) << ' ' << std::flush;
+        timer.reset();
+        std::clog << "\rScanlines remaining: " << (m_image_height - y) << " \n";
         for (int x = 0; x < m_image_width; x++) {
             Point current_pixel{ x, y };
             Colour pixel_colour{ GetSampledColour(x, y, world) };
             framebuffer.SetPixelColour(pixel_colour, current_pixel);
         }
+        now = timer.elapsed();
+        std::cout << "Time elapsed: " << now << "s\n";
+        std::cout << "Delta: " << now - prev << "s\n\n";
+        prev = now;
     }
 
     return framebuffer;

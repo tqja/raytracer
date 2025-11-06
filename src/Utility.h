@@ -5,6 +5,7 @@
 #include <limits>
 #include <memory>
 #include <random>
+#include <chrono>
 
 using std::make_shared;
 using std::shared_ptr;
@@ -25,3 +26,20 @@ inline double RandomDouble() {
 inline double RandomDouble(double min, double max) {
     return min + (max - min) * RandomDouble();
 }
+
+class Timer {
+public:
+    void reset() {
+        m_start = Clock::now();
+    }
+
+    double elapsed() const {
+        return std::chrono::duration_cast<Second>(Clock::now() - m_start).count();
+    }
+
+private:
+    using Clock = std::chrono::steady_clock;
+    using Second = std::chrono::duration<double, std::ratio<1>>;
+
+    std::chrono::time_point<Clock> m_start{ Clock::now() };
+};
