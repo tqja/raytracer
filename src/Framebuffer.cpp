@@ -26,7 +26,7 @@ Framebuffer::Framebuffer(int w, int h)
         throw std::invalid_argument("Framebuffer width must be less than max_width");
     }
 
-    pixels.resize(m_width * m_height);
+    pixels.resize(static_cast<uint64_t>(m_width) * static_cast<uint64_t>(m_height));
 }
 
 static double LinearToGamma(double linear_component) {
@@ -45,11 +45,11 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point& hit_point) {
     double b = LinearToGamma(colour.z());
 
     // scale unit value (0.0 - 1.0) to rgb (0 - 256)
-    static const Interval intensity(0.000, 0.999);
+    static const Interval intensity(0.000f, 0.999f);
     Colour scaled_colour{ intensity.Clamp(r) * 256
                         , intensity.Clamp(g) * 256
                         , intensity.Clamp(b) * 256 };
 
-    const int row_offset{ hit_point.y * m_width };
-     pixels[row_offset + hit_point.x] = scaled_colour;
+    const int row_offset{ static_cast<int>(hit_point.y) * m_width };
+     pixels[row_offset + static_cast<int>(hit_point.x)] = scaled_colour;
 }

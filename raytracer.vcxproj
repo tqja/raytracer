@@ -26,9 +26,11 @@
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\Hittable.h" />
     <ClInclude Include="src\HittableList.h" />
+    <ClInclude Include="src\interface.h" />
     <ClInclude Include="src\Interval.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\simd.h" />
     <ClInclude Include="src\stb_image_write.h" />
     <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\Vec3.h" />
@@ -39,6 +41,7 @@
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\simd.cpp" />
     <ClCompile Include="src\stb_write_impl.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -130,13 +133,21 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <AdditionalOptions>/w44365 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <CallingConvention>Cdecl</CallingConvention>
+      <AdditionalIncludeDirectories>$(ProjectDir)vcpkg_installed\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)vcpkg_installed\x64-windows\lib;$(ProjectDir)vcpkg_installed\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>hwy.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>lib /NOLOGO /OUT:"$(TargetPath).lib" "$(ProjectDir)$(IntDir)*.obj"</Command>
+      <Command>if $(ConfigurationName)==Debug (
+xcopy /Y /D "$(ProjectDir)vcpkg_installed\x64-windows\debug\bin\hwy.dll" "$(OutDir)"
+) else (
+xcopy /Y /D "$(ProjectDir)vcpkg_installed\x64-windows\bin\hwy.dll" "$(OutDir)"
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,15 +161,23 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <AdditionalOptions>/w44365 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <CallingConvention>Cdecl</CallingConvention>
+      <AdditionalIncludeDirectories>$(ProjectDir)vcpkg_installed\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)vcpkg_installed\x64-windows\lib;$(ProjectDir)vcpkg_installed\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>hwy.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>lib /NOLOGO /OUT:"$(TargetPath).lib" "$(ProjectDir)$(IntDir)*.obj"</Command>
+      <Command>if $(ConfigurationName)==Debug (
+xcopy /Y /D "$(ProjectDir)vcpkg_installed\x64-windows\debug\bin\hwy.dll" "$(OutDir)"
+) else (
+xcopy /Y /D "$(ProjectDir)vcpkg_installed\x64-windows\bin\hwy.dll" "$(OutDir)"
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

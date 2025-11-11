@@ -22,7 +22,7 @@ public:
     bool hit(const Ray& ray, const Interval& ray_t, HitRecord& record) const override {
         HitRecord temp_record{};
         bool hit_anything{ false };
-        double closest_so_far{ ray_t.Max() };
+        float closest_so_far{ ray_t.Max() };
 
         for (const auto& object : m_objects) {
             Interval new_interval{ ray_t.Min(), closest_so_far };

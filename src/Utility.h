@@ -10,21 +10,21 @@
 using std::make_shared;
 using std::shared_ptr;
 
-constexpr double infinity{ std::numeric_limits<double>::infinity() };
-constexpr double pi{ 3.1415926535897932385 };
+constexpr float infinity{ std::numeric_limits<float>::infinity() };
+constexpr float pi{ 3.1415927f };
 
-inline double DegToRads(double degrees) {
-    return degrees * pi / 180.0;
+inline float DegToRads(float degrees) {
+    return degrees * pi / 180.0f;
 }
 
-inline double RandomDouble() {
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+inline float RandomFloat() {
+    static std::uniform_real_distribution<float> distribution(0.0, 1.0);
     static std::mt19937 generator;
     return distribution(generator);
 }
 
-inline double RandomDouble(double min, double max) {
-    return min + (max - min) * RandomDouble();
+inline float RandomFloat(float min, float max) {
+    return min + (max - min) * RandomFloat();
 }
 
 class Timer {
@@ -33,13 +33,19 @@ public:
         m_start = Clock::now();
     }
 
-    double elapsed() const {
+    float elapsed() const {
         return std::chrono::duration_cast<Second>(Clock::now() - m_start).count();
     }
 
 private:
     using Clock = std::chrono::steady_clock;
-    using Second = std::chrono::duration<double, std::ratio<1>>;
+    using Second = std::chrono::duration<float, std::ratio<1>>;
 
     std::chrono::time_point<Clock> m_start{ Clock::now() };
 };
+
+
+namespace globals {
+    constexpr size_t lane_width{ 8 };
+    constexpr int samples{ 500 };
+}

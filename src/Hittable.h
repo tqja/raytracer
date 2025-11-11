@@ -10,7 +10,7 @@ public:
     Point3 hit_point{};
     Vec3 normal{};
     shared_ptr<Material> material;
-    double t{};
+    float t{};
     bool front_face{};
 
     void SetFaceNormal(const Ray& ray, const Vec3& outward_normal) {

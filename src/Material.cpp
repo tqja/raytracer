@@ -30,16 +30,16 @@ bool Dielectric::Scatter(
     const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
 ) const {
     attenuation = Colours::white;
-    double ri = record.front_face ? (1.0 / m_refraction_index) : m_refraction_index;
+    float ri = record.front_face ? (1.0f / m_refraction_index) : m_refraction_index;
 
     Vec3 unit_direction = UnitVector(ray_in.GetDirection());
-    double cos_theta = std::fmin(Dot(-unit_direction, record.normal), 1.0);
-    double sin_theta = std::sqrt(1.0 - cos_theta * cos_theta);
+    float cos_theta = std::fmin(Dot(-unit_direction, record.normal), 1.0f);
+    float sin_theta = std::sqrt(1.0f - cos_theta * cos_theta);
 
-    bool cannot_refract = ri * sin_theta > 1.0;
+    bool cannot_refract = ri * sin_theta > 1.0f;
     Vec3 direction{};
 
-    if (cannot_refract || Reflectance(cos_theta, ri) > RandomDouble()) {
+    if (cannot_refract || Reflectance(cos_theta, ri) > RandomFloat()) {
         direction = Reflect(unit_direction, record.normal);
     }
     else {
@@ -50,8 +50,8 @@ bool Dielectric::Scatter(
     return true;  // dielectric always refracts
 }
 
-double Dielectric::Reflectance(double cosine, double refraction_index) {
-    double r0 = (1 - refraction_index) / (1 + refraction_index);
+float Dielectric::Reflectance(float cosine, float refraction_index) {
+    float r0 = (1 - refraction_index) / (1 + refraction_index);
     r0 = r0 * r0;
-    return r0 + (1 - r0) * std::pow((1 - cosine), 5);
+    return r0 + (1 - r0) * std::powf((1 - cosine), 5);
 }

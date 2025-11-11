@@ -54,6 +54,12 @@
     <ClInclude Include="src\ColourConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\simd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Framebuffer.cpp">
@@ -72,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
