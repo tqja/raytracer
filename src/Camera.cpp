@@ -108,6 +108,9 @@ void Camera::GetRayBlock(const Point& p, RayGroup& rays_out) const {
 
     dp->MulAddVec3(offsets, m_pixel_delta_u, m_origin_pixel, pixel_samples, globals::samples);
     dp->MulAddVec3(offsets, m_pixel_delta_v, pixel_samples, pixel_samples, globals::samples);
+    /*Vec3 ray_origin{m_defocus_angle <= 0 ? m_camera_center : DefocusDiskSample()};
+    Vec3 ray_direction{pixel_sample - ray_origin};
+    return Ray(ray_origin, ray_direction);*/
 }
 
 void Camera::SetCameraCenter(const Point3& look_from) {
