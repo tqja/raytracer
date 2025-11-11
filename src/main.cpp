@@ -12,20 +12,15 @@
 #include "Ray.h"
 #include "Utility.h"
 #include "Vec3.h"
-
-#pragma warning(push)
-#pragma warning(disable: 4365, 001)
 #include "stb_image_write.h"
-#pragma warning(pop)
 
 void WriteFramebufferToPng(const char* filename, const int width, const int height, const std::vector<Colour>& pixels) {
     constexpr int channels{ 3 };
-    std::vector<uint8_t> image(width * height * channels);
+    std::vector<float> image(width * height * channels);
 
     for (int i = 0; i < pixels.size(); i++) {
         for (int colour = 0; colour < channels; colour++) {
-            image[i * channels + colour] =
-                static_cast<uint8_t>(pixels[i][colour]);
+            image[i * channels + colour] = pixels[i][colour];
         }
     }
 

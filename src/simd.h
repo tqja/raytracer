@@ -12,24 +12,35 @@ namespace simd
         #undef SIMD_REGISTER
 
         /**
-        * @brief Performs fused multiply-add on Vec3Group components
+        * @brief Performs fused multiply-add on Vec3Group/Vec3 components
         *
-        * Computes a * b + c = out for each component (x, y, z) of Vec3Group
+        * Computes a * b + c = out for each component (x, y, z) of Vec3Group.
+        * Passes Vec3 components as a scalar instead, to be broadcast into a vector.
         *
-        * @param[in] a First group to multiply
-        * @param[in] b Second group to multiply
-        * @param[in] c Group to add
+        * @param[in] a First Vec to multiply
+        * @param[in] b Second Vec to multiply
+        * @param[in] c Vec to add
         * @param[out] out Output group
         * @param[in] num Number of elements
         */
         template <typename A, typename B, typename C>
-        inline void MulAddVec3(const A& a, const B& b, const C& c,
-            Vec3Group& out, const size_t num) const
+        inline void MulAddVec3(const A& a, const B& b, const C& c, Vec3Group& out, const size_t num) const
         {
             for (int axis = 0; axis < 3; axis++) {
                 MulAdd(GetComponentData(a, axis),
                     GetComponentData(b, axis),
                     GetComponentData(c, axis),
+                    GetComponentData(out, axis),
+                    num);
+            }
+        }
+
+        template <typename A, typename B>
+        inline void SubVec3(const A& a, const B& b, Vec3Group& out, const size_t num) const
+        {
+            for (int axis = 0; axis < 3; axis++) {
+                Sub(GetComponentData(a, axis),
+                    GetComponentData(b, axis),
                     GetComponentData(out, axis),
                     num);
             }

@@ -51,8 +51,8 @@ Framebuffer Camera::Render(const HittableList& world) const {
         for (int x = 0; x < m_image_width; x += 1) {
 
             Point current_pixel{ static_cast<float>(x), static_cast<float>(y)};
-            Colour pixel_colour{ GetSampledColour(current_pixel, world) };
-            framebuffer.SetPixelColour(pixel_colour, current_pixel);
+            Colour pixel_colours{ GetSampledColour(current_pixel, world) };
+            framebuffer.SetPixelColour(pixel_colours, current_pixel);
         }
     }
 
@@ -94,7 +94,7 @@ void Camera::Update() {
     m_defocus_disk_v = v * defocus_radius;
 }
 
-void Camera::GetRayBlock(const Point& p, RayGroup& rays_out) const {
+RayGroup Camera::GetRayBlock(const Point& p, RayGroup& rays_out) const {
     auto* dp{ simd::GetDispatch() };
 
 
@@ -108,9 +108,13 @@ void Camera::GetRayBlock(const Point& p, RayGroup& rays_out) const {
 
     dp->MulAddVec3(offsets, m_pixel_delta_u, m_origin_pixel, pixel_samples, globals::samples);
     dp->MulAddVec3(offsets, m_pixel_delta_v, pixel_samples, pixel_samples, globals::samples);
-    /*Vec3 ray_origin{m_defocus_angle <= 0 ? m_camera_center : DefocusDiskSample()};
-    Vec3 ray_direction{pixel_sample - ray_origin};
-    return Ray(ray_origin, ray_direction);*/
+
+    Vec3Group ray_origins{};
+    GetOrigins(ray_origins);    
+
+    Vec3Group ray_directions{};
+    dp->SubVec3(pixel_samples, ray_origins, ray_directions, globals::samples);
+    return RayGroup{ ray_origins, ray_directions };
 }
 
 void Camera::SetCameraCenter(const Point3& look_from) {
@@ -154,19 +158,30 @@ Point3 Camera::DefocusDiskSample() const {
     return m_camera_center + p[0] * m_defocus_disk_u + p[1] * m_defocus_disk_v;
 }
 
+void Camera::GetOrigins(Vec3Group& origins) const {
+    if (m_defocus_angle <= 0) {
+        origins.x.assign(globals::samples, m_camera_center.x());
+        origins.y.assign(globals::samples, m_camera_center.y());
+        origins.z.assign(globals::samples, m_camera_center.z());
+    }
+    else {
+        for (size_t sample = 0; sample < globals::samples; sample++) {
+            auto d{ DefocusDiskSample() };
+            origins.x[sample] = d.x();
+            origins.y[sample] = d.y();
+            origins.z[sample] = d.z();
+        }
+    }
+}
+
 Colour Camera::LerpColours(const Colour& c1, const Colour& c2, float blend) {
     return (1.0f - blend) * c1 + blend * c2;
 }
 
 Colour Camera::GetSampledColour(const Point& p_pixel, const Hittable& world) const {
     Vec3Group colour_samples{};
-    colour_samples.Zero();  // set all elements to black
-    RayGroup ray_samples{};
-
-    GetRayBlock(p_pixel, ray_samples);
-        
-
-    //colour_block += RayColour(ray, world); // TODO: SIMD vector addition, colour_block + RayColour()
+    RayGroup ray_samples{ GetRayBlock(p_pixel, ray_samples) };
+    //colour_samples += RayColour(ray, world); // TODO: SIMD vector addition, colour_block + RayColour()
 
     return Colours::black * m_pixel_samples_scale; // TODO: SIMD vector by scalar multiply, colour_block * sample scale
 }

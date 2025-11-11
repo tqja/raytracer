@@ -94,6 +94,39 @@ namespace simd
 
             }
 
+            void Sub(const std::span<const float> vec1, const std::span<const float> vec2, std::span<float> out,
+                const size_t num) const
+            {
+                assert((vec1.size() >= 1) && "Input 'vec1' span <= 0 not allowed");
+                assert((vec2.size() >= 1) && "Input 'vec2' span <= 0 not allowed");
+
+                const hn::ScalableTag<float> d;
+                const size_t N{ hn::Lanes(d) };
+                const size_t num_full_lanes = num - num % N;  // max iterations that evenly divide N
+
+                const bool vec1_is_scalar{ vec1.size() == 1 };
+                const bool vec2_is_scalar{ vec2.size() == 1 };
+
+                auto v1{ vec1_is_scalar ? hn::Set(d, vec1[0]) : hn::Undefined(d) };
+                auto v2{ vec2_is_scalar ? hn::Set(d, vec2[0]) : hn::Undefined(d) };
+
+                size_t i = 0;
+                for (; i < num_full_lanes; i += N)
+                {
+                    if (!vec1_is_scalar) { v1 = hn::LoadU(d, &vec1[i]); }
+                    if (!vec2_is_scalar) { v2 = hn::LoadU(d, &vec2[i]); }
+                    hn::StoreU(hn::Sub(v1, v2), d, &out[i]);
+                }
+
+                // process the remainder
+                if (i < num) {
+                    auto mask{ hn::FirstN(d, num - i) };
+                    if (!vec1_is_scalar) { v1 = hn::MaskedLoad(mask, d, &vec1[i]); }
+                    if (!vec2_is_scalar) { v2 = hn::MaskedLoad(mask, d, &vec2[i]); }
+                    hn::BlendedStore(hn::Sub(v1, v2), mask, d, &out[i]);
+                }
+            }
+
             /**
             * @brief Performs fused multiply-add for float arrays
             *

@@ -16,7 +16,7 @@ public:
     Colour RayColour(const Ray& ray, const Hittable& world, int depth = 0) const;
     Point3 DefocusDiskSample() const;
 
-    void GetRayBlock(const Point& p, RayGroup& rays_out) const;
+    RayGroup GetRayBlock(const Point& p, RayGroup& rays_out) const;
     void SetCameraCenter(const Point3& m_camera_center);
     void SetCameraTarget(const Point3& m_camera_center);
     void SetSamplesPerPixel(int samples);
@@ -51,5 +51,6 @@ private:
     Colour GetSampledColour(const Point& p_pixel, const Hittable& world) const;
     static Vec3 SampleSquare();
     static void FillSampleSquare(Vec3Group& v);
+    void GetOrigins(Vec3Group& origins) const;
     static Colour LerpColours(const Colour& c1, const Colour& c2, float blend);
 };
