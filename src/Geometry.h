@@ -4,12 +4,6 @@
 #include "Material.h"
 #include "Ray.h"
 
-
-struct Point {
-    float x{};
-    float y{};
-};
-
 class Sphere : public Hittable {
 public:
     Sphere() {};

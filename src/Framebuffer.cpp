@@ -1,6 +1,6 @@
 #include "Framebuffer.h"
 #include "Colour.h"
-#include "Geometry.h"
+#include "Vec3.h"
 #include "Interval.h"
 
 #include <cassert>
@@ -36,7 +36,7 @@ static float LinearToGamma(float linear_component) {
     return 0;
 }
 
-void Framebuffer::SetPixelColour(const Colour& colour, const Point& hit_point) {
+void Framebuffer::SetPixelColour(const Colour& colour, const Point3& hit_point) {
     assert(hit_point.x < m_width && "p.x must be in range of framebuffer width");
     assert(hit_point.y < m_height && "p.y must be in range of framebuffer height");
 
@@ -50,6 +50,6 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point& hit_point) {
                         , intensity.Clamp(g) * 256
                         , intensity.Clamp(b) * 256 };
 
-    const int row_offset{ static_cast<int>(hit_point.y) * m_width };
-     pixels[row_offset + static_cast<int>(hit_point.x)] = scaled_colour;
+    const int row_offset{ static_cast<int>(hit_point.y()) * m_width };
+     pixels[row_offset + static_cast<int>(hit_point.x())] = scaled_colour;
 }

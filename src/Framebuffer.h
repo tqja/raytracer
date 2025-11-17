@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Colour.h"
-#include "Geometry.h"
+#include "Vec3.h"
 #include <vector>
 
 class Framebuffer {
@@ -12,7 +12,7 @@ public:
     Framebuffer(int width, int height);
 
     const std::vector<Colour>& GetPixels() const { return pixels; }
-    void SetPixelColour(const Colour& colour, const Point& hit_point);
+    void SetPixelColour(const Colour& colour, const Point3& hit_point);
 
 private:
     int m_width{};

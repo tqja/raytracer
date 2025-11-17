@@ -50,7 +50,7 @@ Framebuffer Camera::Render(const HittableList& world) const {
         std::clog << "\rScanlines remaining: " << (m_image_height - y) << std::flush;
         for (int x = 0; x < m_image_width; x += 1) {
 
-            Point current_pixel{ static_cast<float>(x), static_cast<float>(y)};
+            Point3 current_pixel{ static_cast<float>(x), static_cast<float>(y), 0.0f};
             Colour pixel_colours{ GetSampledColour(current_pixel, world) };
             framebuffer.SetPixelColour(pixel_colours, current_pixel);
         }
@@ -94,15 +94,15 @@ void Camera::Update() {
     m_defocus_disk_v = v * defocus_radius;
 }
 
-RayGroup Camera::GetRayBlock(const Point& p, RayGroup& rays_out) const {
+RayGroup Camera::GetRayBlock(const Point3& p, RayGroup& rays_out) const {
     auto* dp{ simd::GetDispatch() };
 
 
     Vec3Group offsets{};
     FillSampleSquare(offsets);
     // overwrite result into offsets
-    dp->Add(offsets.x.data(), p.x, offsets.x.data(), globals::samples);
-    dp->Add(offsets.y.data(), p.y, offsets.y.data(), globals::samples);
+    dp->Add(offsets.x.data(), p.x(), offsets.x.data(), globals::samples);
+    dp->Add(offsets.y.data(), p.y(), offsets.y.data(), globals::samples);
 
     Vec3Group pixel_samples{};
 
@@ -178,7 +178,7 @@ Colour Camera::LerpColours(const Colour& c1, const Colour& c2, float blend) {
     return (1.0f - blend) * c1 + blend * c2;
 }
 
-Colour Camera::GetSampledColour(const Point& p_pixel, const Hittable& world) const {
+Colour Camera::GetSampledColour(const Point3& p_pixel, const Hittable& world) const {
     Vec3Group colour_samples{};
     RayGroup ray_samples{ GetRayBlock(p_pixel, ray_samples) };
     //colour_samples += RayColour(ray, world); // TODO: SIMD vector addition, colour_block + RayColour()

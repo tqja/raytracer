@@ -16,7 +16,7 @@ public:
     Colour RayColour(const Ray& ray, const Hittable& world, int depth = 0) const;
     Point3 DefocusDiskSample() const;
 
-    RayGroup GetRayBlock(const Point& p, RayGroup& rays_out) const;
+    RayGroup GetRayBlock(const Point3 & p, RayGroup& rays_out) const;
     void SetCameraCenter(const Point3& m_camera_center);
     void SetCameraTarget(const Point3& m_camera_center);
     void SetSamplesPerPixel(int samples);
@@ -48,7 +48,7 @@ private:
 
     int m_max_bounce_depth{ 10 };
 
-    Colour GetSampledColour(const Point& p_pixel, const Hittable& world) const;
+    Colour GetSampledColour(const Point3& p_pixel, const Hittable& world) const;
     static Vec3 SampleSquare();
     static void FillSampleSquare(Vec3Group& v);
     void GetOrigins(Vec3Group& origins) const;
