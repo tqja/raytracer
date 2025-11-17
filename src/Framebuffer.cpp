@@ -29,7 +29,7 @@ Framebuffer::Framebuffer(int w, int h)
     pixels.resize(static_cast<uint64_t>(m_width) * static_cast<uint64_t>(m_height));
 }
 
-static double LinearToGamma(double linear_component) {
+static float LinearToGamma(float linear_component) {
     if (linear_component > 0) {
         return std::sqrt(linear_component);
     }
@@ -40,9 +40,9 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point& hit_point) {
     assert(hit_point.x < m_width && "p.x must be in range of framebuffer width");
     assert(hit_point.y < m_height && "p.y must be in range of framebuffer height");
 
-    double r = LinearToGamma(colour.x());
-    double g = LinearToGamma(colour.y());
-    double b = LinearToGamma(colour.z());
+    float r = LinearToGamma(colour.x());
+    float g = LinearToGamma(colour.y());
+    float b = LinearToGamma(colour.z());
 
     // scale unit value (0.0 - 1.0) to rgb (0 - 256)
     static const Interval intensity(0.000f, 0.999f);
