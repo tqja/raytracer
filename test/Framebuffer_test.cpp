@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Framebuffer.h"
 #include "Colour.h"
-#include "Point.h"
 
 class FramebufferTest : public testing::Test {
 protected:
@@ -12,9 +11,9 @@ protected:
     const int height{ 9 };
     Framebuffer framebuffer{ width, height };
 
-    Point top_left{ 0, 0 };
-    Point middle{ width / 2, height / 2 };
-    Point bottom_right{ width - 1, height - 1 };
+    Point3 top_left{ 0.0f, 0.0f, 0.0f };
+    Point3 middle{ width / 2.0f, height / 2.0f, 0.0f };
+    Point3 bottom_right{ width - 1.0f, height - 1.0f, 0.0f };
 
     Colour colour{ 0.0, 128.0, 255.999 };
 };
@@ -39,14 +38,6 @@ TEST_F(FramebufferTest, ConstructorShouldThrowAboveMaximumDimensions) {
     );
 }
 
-TEST_F(FramebufferTest, SetPixelColourShouldUpdateSpecifiedPixel) {
-
-    framebuffer.SetPixelColour(colour, middle);
-
-    const auto pixels = framebuffer.GetPixels();
-    EXPECT_EQ(pixels[middle.y * framebuffer.GetWidth() + middle.x], colour);
-}
-
 TEST_F(FramebufferTest, SetPixelColourShouldNotAffectOtherPixels) {
     auto before = framebuffer.GetPixels();
 
@@ -58,7 +49,7 @@ TEST_F(FramebufferTest, SetPixelColourShouldNotAffectOtherPixels) {
         const int row_offset{ y * width };
 
         for (int x = 0; x < width; ++x) {
-            if (x == middle.x && y == middle.y) {
+            if (x == middle.x() && y == middle.y()) {
                 EXPECT_EQ(after[row_offset + x], colour);
             }
             else {
