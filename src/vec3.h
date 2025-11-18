@@ -4,23 +4,20 @@
 #include <iostream>
 #include <vector>
 #include "Utility.h"
+#include "simd.h"
 
 class Vec3Group {
 public:
     Vec3Group() : m_x(globals::samples), m_y(globals::samples), m_z(globals::samples) {};
 
-    std::vector<float> x() { return m_x; }
-    std::vector<float> y() { return m_y; }
-    std::vector<float> z() { return m_z; }
+    std::vector<float>& x() { return m_x; }
+    std::vector<float>& y() { return m_y; }
+    std::vector<float>& z() { return m_z; }
 
     void ZeroX() { std::memset(m_x.data(), 0, sizeof(m_x)); }
     void ZeroY() { std::memset(m_y.data(), 0, sizeof(m_y)); }
     void ZeroZ() { std::memset(m_z.data(), 0, sizeof(m_z)); }
-    void Zero() { 
-        ZeroX();
-        ZeroY();
-        ZeroZ();
-    }
+    void Zero() { ZeroX(); ZeroY(); ZeroZ(); }
 
 private:
     std::vector<float> m_x;
