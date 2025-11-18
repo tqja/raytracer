@@ -106,14 +106,14 @@ RayGroup Camera::GetRayBlock(const Point3& p, RayGroup& rays_out) const {
 
     Vec3Group pixel_samples{};
 
-    dp->MulAddVec3(offsets, m_pixel_delta_u, m_origin_pixel, pixel_samples, globals::samples);
-    dp->MulAddVec3(offsets, m_pixel_delta_v, pixel_samples, pixel_samples, globals::samples);
+    // dp->MulAddVec3(offsets, m_pixel_delta_u, m_origin_pixel, pixel_samples, globals::samples);
+    // dp->MulAddVec3(offsets, m_pixel_delta_v, pixel_samples, pixel_samples, globals::samples);
 
     Vec3Group ray_origins{};
     GetOrigins(ray_origins);    
 
     Vec3Group ray_directions{};
-    dp->SubVec3(pixel_samples, ray_origins, ray_directions, globals::samples);
+    // dp->SubVec3(pixel_samples, ray_origins, ray_directions, globals::samples);
     return RayGroup{ ray_origins, ray_directions };
 }
 

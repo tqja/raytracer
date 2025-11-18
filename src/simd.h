@@ -23,28 +23,6 @@ namespace simd
         * @param[out] out Output group
         * @param[in] num Number of elements
         */
-        template <typename A, typename B, typename C>
-        inline void MulAddVec3(const A& a, const B& b, const C& c, Vec3Group& out, const size_t num) const
-        {
-            for (int axis = 0; axis < 3; axis++) {
-                MulAdd(GetComponentData(a, axis),
-                    GetComponentData(b, axis),
-                    GetComponentData(c, axis),
-                    GetComponentData(out, axis),
-                    num);
-            }
-        }
-
-        template <typename A, typename B>
-        inline void SubVec3(const A& a, const B& b, Vec3Group& out, const size_t num) const
-        {
-            for (int axis = 0; axis < 3; axis++) {
-                Sub(GetComponentData(a, axis),
-                    GetComponentData(b, axis),
-                    GetComponentData(out, axis),
-                    num);
-            }
-        }
 
         template <typename T>
         static std::span<float> GetComponentData(T& t, int axis) {
@@ -85,8 +63,6 @@ namespace simd
                 }
             }
         }
-
-
     };
 
     DispatchBase* GetDispatch();
