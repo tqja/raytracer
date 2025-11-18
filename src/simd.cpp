@@ -5,8 +5,14 @@
 
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "simd.cpp"
+
+#pragma warning(push)
+#pragma warning(disable: 4365)
+
 #include <hwy/foreach_target.h>
 #include <hwy/highway.h>
+
+#pragma warning(pop)
 
 
 namespace simd {
