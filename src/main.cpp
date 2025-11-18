@@ -27,23 +27,6 @@ void WriteFramebufferToPng(const char* filename, const int width, const int heig
     stbi_write_png(filename, width, height, channels, image.data(), width * static_cast<int>(channels));
 }
 
-shared_ptr<Material> RandomMaterial() {
-    auto choose_mat{ RandomFloat() };
-
-    if (choose_mat < 0.8) {
-        auto albedo{ Colour::Random() * Colour::Random() };
-        return make_shared<Lambertian>(albedo);
-    }
-
-    if (choose_mat < 0.95) {
-        auto albedo{ Colour::Random(0.5, 1) };
-        auto fuzz{ RandomFloat(0, 0.5) };
-        return make_shared<Metal>(albedo, fuzz);
-    }
-
-    return make_shared<Dielectric>(1.5);
-}
-
 HittableList InitWorld() {
     HittableList world{};
 
