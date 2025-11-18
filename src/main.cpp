@@ -1,5 +1,3 @@
-#include <algorithm>
-#include <iostream>
 #include <vector>
 #include <memory>
 
@@ -7,10 +5,8 @@
 #include "Colour.h"
 #include "Framebuffer.h"
 #include "Geometry.h"
-#include "Hittable.h"
 #include "HittableList.h"
 #include "Material.h"
-#include "Ray.h"
 #include "Utility.h"
 #include "Vec3.h"
 
@@ -38,8 +34,8 @@ static HittableList InitWorld() {
     HittableList world{};
 
     auto material_ground{ make_shared<Lambertian>(Colour(0.5f, 0.5f, 0.5f)) };
-    Point3 p_ground{ 0, -1000, 0 };
-    world.add(make_shared<Sphere>(p_ground, 1000, material_ground));
+    Point3 p_ground{ 0.0f, -1000.0f, 0.0f };
+    world.add(make_shared<Sphere>(p_ground, 1000.0f, material_ground));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
@@ -50,13 +46,13 @@ static HittableList InitWorld() {
         }
     }
 
-    Point3 p_diffuse{ -4, 1, 0 };
-    Point3 p_glass{ 0, 1, 0 };
-    Point3 p_metal{ 4, 1, 0 };
+    Point3 p_diffuse{ -4.0f, 1.0f, 0.0f };
+    Point3 p_glass{ 0.0f, 1.0f, 0.0f };
+    Point3 p_metal{ 4.0f, 1.0f, 0.0f };
 
     auto material_diffuse{ make_shared<Lambertian>(Colour(0.1f, 0.2f, 0.5f)) };
     auto material_glass{ make_shared<Dielectric>(1.50f) };
-    auto material_metal{ make_shared<Metal>(Colour(0.7f, 0.6f, 0.5f), 0.0) };
+    auto material_metal{ make_shared<Metal>(Colour(0.7f, 0.6f, 0.5f), 0.0f) };
 
     world.add(make_shared<Sphere>(p_diffuse, 1.0f, material_diffuse));
     world.add(make_shared<Sphere>(p_glass, 1.0f, material_glass));

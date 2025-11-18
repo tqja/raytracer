@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "simd.h"
-#include "vec3.h"
 
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "simd.cpp"
@@ -65,7 +64,7 @@ struct Dispatch : public simd::DispatchBase {
 
     template<typename Operation>
     void BinaryOp(const float* HWY_RESTRICT in1, const float* HWY_RESTRICT in2, float* out, const size_t total_lanes, Operation op) const {
-        const hn::ScalableTag<float> d;
+        const hn::ScalableTag<float> d{};
         const size_t N{ hn::Lanes(d) };
         const size_t aligned_lanes{ total_lanes & ~(N - 1) };
 
@@ -87,7 +86,7 @@ struct Dispatch : public simd::DispatchBase {
 
     template<typename Operation>
     void BinaryOp(const float* HWY_RESTRICT in, const float scalar, float* out, const size_t total_lanes, Operation op) const {
-        const hn::ScalableTag<float> d;
+        const hn::ScalableTag<float> d{};
         const size_t N{ hn::Lanes(d) };
         const size_t aligned_lanes{ total_lanes & ~(N - 1) };
 
@@ -125,7 +124,7 @@ struct Dispatch : public simd::DispatchBase {
         assert((b.size() >= 1) && "Input 'b' span <= 0 not allowed");
         assert((c.size() >= 1) && "Input 'c' span <= 0 not allowed");
 
-        const hn::ScalableTag<float> d;
+        const hn::ScalableTag<float> d{};
         const size_t N{ hn::Lanes(d) };
         const size_t aligned_lanes{ total_lanes & ~(N - 1) };
 
@@ -158,7 +157,7 @@ struct Dispatch : public simd::DispatchBase {
 
 };
 
-simd::DispatchBase* _GetDispatch()
+static simd::DispatchBase* _GetDispatch()
 {
     static Dispatch d;
     return &d;
