@@ -101,8 +101,8 @@ RayGroup Camera::GetRayBlock(const Point3& p, RayGroup& rays_out) const {
     Vec3Group offsets{};
     FillSampleSquare(offsets);
     // overwrite result into offsets
-    dp->Add(offsets.x.data(), p.x(), offsets.x.data(), globals::samples);
-    dp->Add(offsets.y.data(), p.y(), offsets.y.data(), globals::samples);
+    dp->Add(offsets.x().data(), p.x(), offsets.x().data(), globals::samples);
+    dp->Add(offsets.y().data(), p.y(), offsets.y().data(), globals::samples);
 
     Vec3Group pixel_samples{};
 
@@ -148,8 +148,8 @@ Vec3 Camera::SampleSquare() {
 
 void Camera::FillSampleSquare(Vec3Group& point_group) {
     for (size_t sample = 0; sample < globals::samples; sample++) {
-        point_group.x[sample] = RandomFloat() - 0.5f;
-        point_group.y[sample] = RandomFloat() - 0.5f;
+        point_group.x()[sample] = RandomFloat() - 0.5f;
+        point_group.y()[sample] = RandomFloat() - 0.5f;
     }
 }
 
@@ -160,16 +160,16 @@ Point3 Camera::DefocusDiskSample() const {
 
 void Camera::GetOrigins(Vec3Group& origins) const {
     if (m_defocus_angle <= 0) {
-        origins.x.assign(globals::samples, m_camera_center.x());
-        origins.y.assign(globals::samples, m_camera_center.y());
-        origins.z.assign(globals::samples, m_camera_center.z());
+        origins.x().assign(globals::samples, m_camera_center.x());
+        origins.y().assign(globals::samples, m_camera_center.y());
+        origins.z().assign(globals::samples, m_camera_center.z());
     }
     else {
         for (size_t sample = 0; sample < globals::samples; sample++) {
             auto d{ DefocusDiskSample() };
-            origins.x[sample] = d.x();
-            origins.y[sample] = d.y();
-            origins.z[sample] = d.z();
+            origins.x()[sample] = d.x();
+            origins.y()[sample] = d.y();
+            origins.z()[sample] = d.z();
         }
     }
 }

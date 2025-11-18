@@ -5,21 +5,27 @@
 #include <vector>
 #include "Utility.h"
 
-struct Vec3Group {
-    Vec3Group() : x(globals::samples), y(globals::samples), z(globals::samples) {};
+class Vec3Group {
+public:
+    Vec3Group() : m_x(globals::samples), m_y(globals::samples), m_z(globals::samples) {};
 
-    std::vector<float> x;
-    std::vector<float> y;
-    std::vector<float> z;
+    std::vector<float> x() { return m_x; }
+    std::vector<float> y() { return m_y; }
+    std::vector<float> z() { return m_z; }
 
-    void ZeroX() { std::memset(x.data(), 0, sizeof(x)); }
-    void ZeroY() { std::memset(y.data(), 0, sizeof(y)); }
-    void ZeroZ() { std::memset(z.data(), 0, sizeof(z)); }
+    void ZeroX() { std::memset(m_x.data(), 0, sizeof(m_x)); }
+    void ZeroY() { std::memset(m_y.data(), 0, sizeof(m_y)); }
+    void ZeroZ() { std::memset(m_z.data(), 0, sizeof(m_z)); }
     void Zero() { 
         ZeroX();
         ZeroY();
         ZeroZ();
     }
+
+private:
+    std::vector<float> m_x;
+    std::vector<float> m_y;
+    std::vector<float> m_z;
 };
 
 class Vec3 {
