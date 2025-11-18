@@ -69,7 +69,8 @@ struct Dispatch : public simd::DispatchBase {
         }
 
         if (i < total_lanes) {
-            auto mask{ hn::FirstN(d, total_lanes - i) };
+            const size_t remaining_lanes{ total_lanes - i };
+            auto mask{ hn::FirstN(d, remaining_lanes) };
             const auto v1 = hn::MaskedLoad(mask, d, in1 + i);
             const auto v2 = hn::MaskedLoad(mask, d, in2 + i);
             hn::BlendedStore(op(v1, v2), mask, d, out + i);
@@ -91,7 +92,8 @@ struct Dispatch : public simd::DispatchBase {
         }
 
         if (i < total_lanes) {
-            auto mask{ hn::FirstN(d, total_lanes - i) };
+            const size_t remaining_lanes{ total_lanes - i };
+            auto mask{ hn::FirstN(d, remaining_lanes) };
             const auto v1 = hn::MaskedLoad(mask, d, in + i);
             hn::BlendedStore(op(v1, v2), mask, d, out + i);
         }
@@ -110,14 +112,14 @@ struct Dispatch : public simd::DispatchBase {
     * @param[in] num Number of elements
     */
     void MulAdd(const std::span<const float> a, const std::span<const float> b, const std::span<const float> c,
-        std::span<float> out, const size_t num) const {
+        std::span<float> out, const size_t total_lanes) const {
         assert((a.size() >= 1) && "Input 'a' span <= 0 not allowed");
         assert((b.size() >= 1) && "Input 'b' span <= 0 not allowed");
         assert((c.size() >= 1) && "Input 'c' span <= 0 not allowed");
 
         const hn::ScalableTag<float> d;
         const size_t N{ hn::Lanes(d) };
-        const size_t num_full_lanes = num - num % N;
+        const size_t aligned_lanes{ total_lanes & ~(N - 1) };
 
         const bool a_is_scalar{ a.size() == 1 };
         const bool b_is_scalar{ b.size() == 1 };
@@ -128,7 +130,7 @@ struct Dispatch : public simd::DispatchBase {
         auto cv{ c_is_scalar ? hn::Set(d, c[0]) : hn::Undefined(d)};
 
         size_t i = 0;
-        for (; i < num_full_lanes; i += N) {
+        for (; i < aligned_lanes; i += N) {
             // if vector wasn't set with scalar, then load the values from array
             if (!a_is_scalar) { av = hn::LoadU(d, &a[i]); }
             if (!b_is_scalar) { bv = hn::LoadU(d, &b[i]); }
@@ -136,8 +138,9 @@ struct Dispatch : public simd::DispatchBase {
             hn::StoreU(hn::MulAdd(av, bv, cv), d, &out[i]);
         }
 
-        if (i < num) {
-            auto mask{ hn::FirstN(d, num - i) };
+        if (i < total_lanes) {
+            const size_t remaining_lanes{ total_lanes - i };
+            auto mask{ hn::FirstN(d, remaining_lanes) };
             if (!a_is_scalar) { av = hn::MaskedLoad(mask, d, &a[i]); }
             if (!b_is_scalar) { bv = hn::MaskedLoad(mask, d, &b[i]); }
             if (!c_is_scalar) { cv = hn::MaskedLoad(mask, d, &c[i]); }
