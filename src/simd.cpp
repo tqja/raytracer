@@ -25,78 +25,77 @@ struct Dispatch : public simd::DispatchBase {
             << '\n';
     }
 
-    void Add(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, float* out, const size_t num) const override {
+    void Add(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, float* out, const size_t total_lanes) const override {
+        const auto op = [](auto in1, auto in2) { return hn::Add(in1, in2); };
+        BinaryOp(vec1, vec2, out, total_lanes, op);
+    }
+
+    void Add(const float* HWY_RESTRICT vec, const float scalar, float* out, const size_t total_lanes) const override {
+        const auto op = [](auto in1, auto in2) { return hn::Add(in1, in2); };
+        BinaryOp(vec, scalar, out, total_lanes, op);
+    }
+
+    void Sub(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, float* out, const size_t total_lanes) const override {
+        const auto op = [](auto in1, auto in2) { return hn::Sub(in1, in2); };
+        BinaryOp(vec1, vec2, out, total_lanes, op);
+    }
+
+    void Sub(const float* HWY_RESTRICT vec, const float scalar, float* out, const size_t total_lanes) const override {
+        const auto op = [](auto in1, auto in2) { return hn::Sub(in1, in2); };
+        BinaryOp(vec, scalar, out, total_lanes, op);
+    }
+
+    void Mul(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, float* out, const size_t total_lanes) const override {
+        const auto op = [](auto in1, auto in2) { return hn::Mul(in1, in2); };
+        BinaryOp(vec1, vec2, out, total_lanes, op);
+    }
+
+    void Mul(const float* HWY_RESTRICT vec, const float scalar, float* out, const size_t total_lanes) const override {
+        const auto op = [](auto in1, auto in2) { return hn::Mul(in1, in2); };
+        BinaryOp(vec, scalar, out, total_lanes, op);
+    }
+
+    template<typename Operation>
+    void BinaryOp(const float* HWY_RESTRICT in1, const float* HWY_RESTRICT in2, float* out, const size_t total_lanes, Operation op) const {
         const hn::ScalableTag<float> d;
         const size_t N{ hn::Lanes(d) };
-        const size_t num_full_lanes = num - num % N;  // max iterations that evenly divide N
+        const size_t aligned_lanes{ total_lanes & ~(N - 1) };
 
         size_t i = 0;
-        for (; i < num_full_lanes; i += N)
-        {
-            const auto v1{ hn::LoadU(d, vec1 + i) };
-            const auto v2{ hn::LoadU(d, vec2 + i) };
-            hn::StoreU(hn::Add(v1, v2), d, out + i);
+        for (; i < aligned_lanes; i += N) {
+            const auto v1{ hn::LoadU(d, in1 + i) };
+            const auto v2{ hn::LoadU(d, in2 + i) };
+            hn::StoreU(op(v1, v2), d, out + i);
         }
 
-        // process the remainder
-        if (i < num) {
-            auto mask{ hn::FirstN(d, num - i) };
-            const auto v1 = hn::MaskedLoad(mask, d, vec1 + i);
-            const auto v2 = hn::MaskedLoad(mask, d, vec2 + i);
-            hn::BlendedStore(hn::Add(v1, v2), mask, d, out + i);
+        if (i < total_lanes) {
+            auto mask{ hn::FirstN(d, total_lanes - i) };
+            const auto v1 = hn::MaskedLoad(mask, d, in1 + i);
+            const auto v2 = hn::MaskedLoad(mask, d, in2 + i);
+            hn::BlendedStore(op(v1, v2), mask, d, out + i);
         }
     }
 
-    void Add(const float* HWY_RESTRICT in, const float scalar, float* out, const size_t num) const override {
+    template<typename Operation>
+    void BinaryOp(const float* HWY_RESTRICT in, const float scalar, float* out, const size_t total_lanes, Operation op) const {
         const hn::ScalableTag<float> d;
         const size_t N{ hn::Lanes(d) };
-        const size_t num_full_lanes = num - num % N;
+        const size_t aligned_lanes{ total_lanes & ~(N - 1) };
+
         const auto v2{ hn::Set(d, scalar) };
 
         size_t i = 0;
-        for (; i < num_full_lanes; i += N) {
+        for (; i < aligned_lanes; i += N) {
             const auto v1{ hn::LoadU(d, in + i) };
-            hn::StoreU(hn::Add(v1, v2), d, out + i);
+            hn::StoreU(op(v1, v2), d, out + i);
         }
 
-        // process the remainder
-        if (i < num) {
-            auto mask{ hn::FirstN(d, num - i) };
+        if (i < total_lanes) {
+            auto mask{ hn::FirstN(d, total_lanes - i) };
             const auto v1 = hn::MaskedLoad(mask, d, in + i);
-            hn::BlendedStore(hn::Add(v1, v2), mask, d, out + i);
+            hn::BlendedStore(op(v1, v2), mask, d, out + i);
         }
 
-    }
-
-    void Sub(const std::span<const float> vec1, const std::span<const float> vec2, std::span<float> out, const size_t num) const {
-        assert((vec1.size() >= 1) && "Input 'vec1' span <= 0 not allowed");
-        assert((vec2.size() >= 1) && "Input 'vec2' span <= 0 not allowed");
-
-        const hn::ScalableTag<float> d;
-        const size_t N{ hn::Lanes(d) };
-        const size_t num_full_lanes = num - num % N;  // max iterations that evenly divide N
-
-        const bool vec1_is_scalar{ vec1.size() == 1 };
-        const bool vec2_is_scalar{ vec2.size() == 1 };
-
-        auto v1{ vec1_is_scalar ? hn::Set(d, vec1[0]) : hn::Undefined(d) };
-        auto v2{ vec2_is_scalar ? hn::Set(d, vec2[0]) : hn::Undefined(d) };
-
-        size_t i = 0;
-        for (; i < num_full_lanes; i += N)
-        {
-            if (!vec1_is_scalar) { v1 = hn::LoadU(d, &vec1[i]); }
-            if (!vec2_is_scalar) { v2 = hn::LoadU(d, &vec2[i]); }
-            hn::StoreU(hn::Sub(v1, v2), d, &out[i]);
-        }
-
-        // process the remainder
-        if (i < num) {
-            auto mask{ hn::FirstN(d, num - i) };
-            if (!vec1_is_scalar) { v1 = hn::MaskedLoad(mask, d, &vec1[i]); }
-            if (!vec2_is_scalar) { v2 = hn::MaskedLoad(mask, d, &vec2[i]); }
-            hn::BlendedStore(hn::Sub(v1, v2), mask, d, &out[i]);
-        }
     }
 
     /**
@@ -145,6 +144,7 @@ struct Dispatch : public simd::DispatchBase {
             hn::BlendedStore(hn::MulAdd(av, bv, cv), mask, d, &out[i]);
         }
     }
+
 };
 
 simd::DispatchBase* _GetDispatch()
