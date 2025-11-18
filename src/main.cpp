@@ -21,6 +21,7 @@
 
 #pragma warning(pop)
 
+static void WriteFramebufferToPng(const char* filename, const int width, const int height, const std::vector<Colour>& pixels) {
     constexpr size_t channels{ 3 };
     std::vector<float> image(static_cast<size_t>(width * height * channels));
 
@@ -33,7 +34,7 @@
     stbi_write_png(filename, width, height, channels, image.data(), width * static_cast<int>(channels));
 }
 
-HittableList InitWorld() {
+static HittableList InitWorld() {
     HittableList world{};
 
     auto material_ground{ make_shared<Lambertian>(Colour(0.5f, 0.5f, 0.5f)) };
