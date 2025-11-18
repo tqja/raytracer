@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Colour.h"
 #include "Framebuffer.h"
 #include "Hittable.h"
 #include "HittableList.h"
 #include "Vec3.h"
-#include "Utility.h"
+#include "Ray.h"
 
 class Camera {
 public:

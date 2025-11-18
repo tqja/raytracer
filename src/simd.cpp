@@ -1,5 +1,7 @@
 #include <cassert>
 #include <span>
+#include <iostream>
+
 #include "simd.h"
 #include "vec3.h"
 

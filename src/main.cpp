@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "Camera.h"
 #include "Colour.h"
@@ -12,9 +13,14 @@
 #include "Ray.h"
 #include "Utility.h"
 #include "Vec3.h"
+
+#pragma warning(push)
+#pragma warning(disable: 4365)
+
 #include "stb_image_write.h"
 
-void WriteFramebufferToPng(const char* filename, const int width, const int height, const std::vector<Colour>& pixels) {
+#pragma warning(pop)
+
     constexpr size_t channels{ 3 };
     std::vector<float> image(static_cast<size_t>(width * height * channels));
 
