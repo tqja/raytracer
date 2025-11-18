@@ -15,16 +15,16 @@
 #include "stb_image_write.h"
 
 void WriteFramebufferToPng(const char* filename, const int width, const int height, const std::vector<Colour>& pixels) {
-    constexpr int channels{ 3 };
-    std::vector<float> image(width * height * channels);
+    constexpr size_t channels{ 3 };
+    std::vector<float> image(static_cast<size_t>(width * height * channels));
 
-    for (int i = 0; i < pixels.size(); i++) {
+    for (size_t i = 0; i < pixels.size(); i++) {
         for (int colour = 0; colour < channels; colour++) {
             image[i * channels + colour] = pixels[i][colour];
         }
     }
 
-    stbi_write_png(filename, width, height, channels, image.data(), width * channels);
+    stbi_write_png(filename, width, height, channels, image.data(), width * static_cast<int>(channels));
 }
 
 shared_ptr<Material> RandomMaterial() {

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Framebuffer.h"
-#include "Colour.h"
+#include "Vec3.h"
 
 class FramebufferTest : public testing::Test {
 protected:
@@ -15,7 +15,7 @@ protected:
     Point3 middle{ width / 2.0f, height / 2.0f, 0.0f };
     Point3 bottom_right{ width - 1.0f, height - 1.0f, 0.0f };
 
-    Colour colour{ 0.0, 128.0, 255.999 };
+    Colour colour{ 0.0f, 128.0f, 255.999f };
 };
 
 

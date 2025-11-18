@@ -37,8 +37,8 @@ static float LinearToGamma(float linear_component) {
 }
 
 void Framebuffer::SetPixelColour(const Colour& colour, const Point3& hit_point) {
-    assert(hit_point.x < m_width && "p.x must be in range of framebuffer width");
-    assert(hit_point.y < m_height && "p.y must be in range of framebuffer height");
+    assert(hit_point.x() < m_width && "p.x must be in range of framebuffer width");
+    assert(hit_point.y() < m_height && "p.y must be in range of framebuffer height");
 
     float r = LinearToGamma(colour.x());
     float g = LinearToGamma(colour.y());
@@ -51,5 +51,5 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point3& hit_point) 
                         , intensity.Clamp(b) * 256 };
 
     const int row_offset{ static_cast<int>(hit_point.y()) * m_width };
-     pixels[row_offset + static_cast<int>(hit_point.x())] = scaled_colour;
+    pixels[static_cast<size_t>(row_offset + hit_point.x())] = scaled_colour;
 }
