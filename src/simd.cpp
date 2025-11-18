@@ -13,32 +13,19 @@ namespace simd {
 namespace HWY_NAMESPACE {
 namespace hn = hwy::HWY_NAMESPACE;
 
-struct Dispatch : public simd::DispatchBase
-{
+struct Dispatch : public simd::DispatchBase {
     #define SIMD_REGISTER(RET, NAME, ...) \
         virtual RET NAME(__VA_ARGS__) const = 0;
     #include "interface.h"
     #undef SIMD_REGISTER
 
-    void Payload() const override
-    {
+    void Payload() const override {
         std::cout << "payload: target = "
             << hwy::TargetName(HWY_TARGET)
             << '\n';
     }
 
-    /**
-    * @brief Adds two arrays of floats together
-    * 
-    * Computes: vec1[i] + vec2[i] = out[i]
-    * 
-    * @param[in] vec1 LHS operand for addition
-    * @param[in] vec2 RHS operand for addition
-    * @param[out] out Output vector (result)
-    * @param[in] num Number of elements
-    */
-    void Add(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, float* out, const size_t num) const override
-    {
+    void Add(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, float* out, const size_t num) const override {
         const hn::ScalableTag<float> d;
         const size_t N{ hn::Lanes(d) };
         const size_t num_full_lanes = num - num % N;  // max iterations that evenly divide N
@@ -60,26 +47,14 @@ struct Dispatch : public simd::DispatchBase
         }
     }
 
-    /**
-    * @brief Adds a scalar to a vector of floats
-    *
-    * Computes: in[i] + scalar = out[i]
-    *
-    * @param[in] in The vector of floats
-    * @param[in] scalar The value to add to the vector
-    * @param[out] out Output vector (result)
-    * @param[in] num Number of elements
-    */
-    void Add(const float* HWY_RESTRICT in, const float scalar, float* out, const size_t num) const override
-    {
+    void Add(const float* HWY_RESTRICT in, const float scalar, float* out, const size_t num) const override {
         const hn::ScalableTag<float> d;
         const size_t N{ hn::Lanes(d) };
         const size_t num_full_lanes = num - num % N;
         const auto v2{ hn::Set(d, scalar) };
 
         size_t i = 0;
-        for (; i < num_full_lanes; i += N)
-        {
+        for (; i < num_full_lanes; i += N) {
             const auto v1{ hn::LoadU(d, in + i) };
             hn::StoreU(hn::Add(v1, v2), d, out + i);
         }
@@ -93,9 +68,7 @@ struct Dispatch : public simd::DispatchBase
 
     }
 
-    void Sub(const std::span<const float> vec1, const std::span<const float> vec2, std::span<float> out,
-        const size_t num) const
-    {
+    void Sub(const std::span<const float> vec1, const std::span<const float> vec2, std::span<float> out, const size_t num) const {
         assert((vec1.size() >= 1) && "Input 'vec1' span <= 0 not allowed");
         assert((vec2.size() >= 1) && "Input 'vec2' span <= 0 not allowed");
 
@@ -138,8 +111,7 @@ struct Dispatch : public simd::DispatchBase
     * @param[in] num Number of elements
     */
     void MulAdd(const std::span<const float> a, const std::span<const float> b, const std::span<const float> c,
-        std::span<float> out, const size_t num) const
-    {
+        std::span<float> out, const size_t num) const {
         assert((a.size() >= 1) && "Input 'a' span <= 0 not allowed");
         assert((b.size() >= 1) && "Input 'b' span <= 0 not allowed");
         assert((c.size() >= 1) && "Input 'c' span <= 0 not allowed");
