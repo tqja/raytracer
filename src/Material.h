@@ -4,7 +4,6 @@
 #include "Ray.h"
 #include "Vec3.h"
 #include "Colour.h"
-#include "ColourConstants.h"
 
 #include <functional>
 #include <numeric>

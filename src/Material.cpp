@@ -1,4 +1,5 @@
 #include "Material.h"
+#include "ColourConstants.h"
 
 bool Lambertian::Scatter(
     const Ray& ray_in, const HitRecord& record, Colour& attenuation, Ray& scattered
