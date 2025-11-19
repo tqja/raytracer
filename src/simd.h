@@ -1,6 +1,4 @@
 #pragma once
-#include "vec3.h"
-#include <span>
 
 namespace simd
 {
