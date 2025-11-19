@@ -3,27 +3,15 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+
 #include "Utility.h"
 #include "simd.h"
 
-class Vec3Group {
-public:
-    Vec3Group() : m_x(globals::samples), m_y(globals::samples), m_z(globals::samples) {};
+class Vec3;
+class Vec3Group;
 
-    std::vector<float>& x() { return m_x; }
-    std::vector<float>& y() { return m_y; }
-    std::vector<float>& z() { return m_z; }
-
-    void ZeroX() { std::memset(m_x.data(), 0, sizeof(m_x)); }
-    void ZeroY() { std::memset(m_y.data(), 0, sizeof(m_y)); }
-    void ZeroZ() { std::memset(m_z.data(), 0, sizeof(m_z)); }
-    void Zero() { ZeroX(); ZeroY(); ZeroZ(); }
-
-private:
-    std::vector<float> m_x;
-    std::vector<float> m_y;
-    std::vector<float> m_z;
-};
+template<typename T>
+concept VecLike = std::is_same_v<Vec3, T> || std::is_same_v<Vec3Group, T>;
 
 class Vec3 {
 public:
@@ -179,3 +167,115 @@ inline Vec3 RandomInUnitDisk() {
             return p;
     }
 }
+
+class Vec3Group {
+public:
+    Vec3Group() : m_x(globals::samples), m_y(globals::samples), m_z(globals::samples) {};
+
+    std::vector<float>& x() { return m_x; }
+    std::vector<float>& y() { return m_y; }
+    std::vector<float>& z() { return m_z; }
+
+    const std::vector<float>& x() const { return m_x; }
+    const std::vector<float>& y() const { return m_y; }
+    const std::vector<float>& z() const { return m_z; }
+
+    void ZeroX() { std::memset(m_x.data(), 0, sizeof(m_x)); }
+    void ZeroY() { std::memset(m_y.data(), 0, sizeof(m_y)); }
+    void ZeroZ() { std::memset(m_z.data(), 0, sizeof(m_z)); }
+    void Zero() { ZeroX(); ZeroY(); ZeroZ(); }
+
+    template <typename VecLike>
+    void Add(const VecLike& other, Vec3Group& out) {
+        BinaryOperation(other, out, []<typename FloatLike>(
+            simd::DispatchBase * dp, const float* l, const FloatLike r, float* out, const size_t num
+            ) {
+            dp->Add(l, r, out, num);
+        }
+        );
+    }
+
+    template <typename VecLike>
+    void Sub(const VecLike& other, Vec3Group& out) {
+        BinaryOperation(other, out, []<typename FloatLike>(
+            simd::DispatchBase * dp, const float* l, const FloatLike r, float* out, const size_t num
+            ) {
+            dp->Sub(l, r, out, num);
+        }
+        );
+    }
+
+    template <typename VecLike>
+    void Mul(const VecLike& other, Vec3Group& out) {
+        BinaryOperation(other, out, []<typename FloatLike>(
+            simd::DispatchBase * dp, const float* l, const FloatLike r, float* out, const size_t num
+            ) {
+            dp->Mul(l, r, out, num);
+        }
+        );
+    }
+
+    template <typename VecLike>
+    void MulAdd(const VecLike& b, const VecLike& c, Vec3Group& out) {
+        simd::DispatchBase* dp{ simd::GetDispatch() };
+
+        for (size_t axis; axis < 3; axis++) {
+            dp->MulAdd(GetOperand(*this, axis), GetOperand(b, axis), GetOperand(c, axis),
+                GetOperand(out, axis), globals::samples);
+        }
+    }
+
+    Vec3 operator[](size_t i) const {
+        return Vec3{ m_x[i], m_y[i], m_z[i] };
+    }
+
+    void operator+=(const Vec3Group& other) {
+        Add(other, *this);
+    }
+
+    void operator-=(const Vec3Group& other) {
+        Sub(other, *this);
+    }
+
+private:
+    std::vector<float> m_x;
+    std::vector<float> m_y;
+    std::vector<float> m_z;
+
+    template <typename VecLike, typename Operation>
+    void BinaryOperation(const VecLike& other, Vec3Group& out, Operation operation) {
+        simd::DispatchBase* dp{ simd::GetDispatch() };
+
+        for (size_t axis = 0; axis < 3; axis++) {
+            operation(dp, GetOperand(*this, axis), GetOperand(other, axis), GetOperand(out, axis), globals::samples);
+        }
+    }
+
+    template <typename VecLike>
+    static auto GetOperand(VecLike& v, size_t axis) {
+        if constexpr (std::is_same_v<std::remove_reference_t<VecLike>, Vec3>) {
+            if (axis == 0) return v.x();
+            if (axis == 1) return v.y();
+            return v.z();
+        }
+        else {
+            if (axis == 0) return v.x().data();
+            if (axis == 1) return v.y().data();
+            return v.z().data();
+        }
+    }
+
+    template <typename VecLike>
+    static auto GetOperand(const VecLike& v, size_t axis) {
+        if constexpr (std::is_same_v<VecLike, Vec3>) {
+            if (axis == 0) return v.x();
+            if (axis == 1) return v.y();
+            return v.z();
+        }
+        else {
+            if (axis == 0) return v.x().data();
+            if (axis == 1) return v.y().data();
+            return v.z().data();
+        }
+    }
+};
