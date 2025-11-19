@@ -9,8 +9,6 @@
 #include "ColourConstants.h"
 #include "simd.h"
 
-#include <array>
-
 Camera::Camera(int image_width, int image_height, float fov) : m_image_width{ image_width }, m_image_height{ image_height }, m_horizontal_fov{ fov } {
     Update();
 }
@@ -100,20 +98,18 @@ RayGroup Camera::GetRayBlock(const Point3& p, RayGroup& rays_out) const {
 
     Vec3Group offsets{};
     FillSampleSquare(offsets);
-    // overwrite result into offsets
-    dp->Add(offsets.x().data(), p.x(), offsets.x().data(), globals::samples);
-    dp->Add(offsets.y().data(), p.y(), offsets.y().data(), globals::samples);
+    offsets += p;
 
     Vec3Group pixel_samples{};
 
-    // dp->MulAddVec3(offsets, m_pixel_delta_u, m_origin_pixel, pixel_samples, globals::samples);
-    // dp->MulAddVec3(offsets, m_pixel_delta_v, pixel_samples, pixel_samples, globals::samples);
+    offsets.MulAdd(m_pixel_delta_u, m_origin_pixel, pixel_samples);
+    offsets.MulAdd(m_pixel_delta_v, pixel_samples, pixel_samples);
 
     Vec3Group ray_origins{};
     GetOrigins(ray_origins);    
 
     Vec3Group ray_directions{};
-    // dp->SubVec3(pixel_samples, ray_origins, ray_directions, globals::samples);
+    pixel_samples.Sub(ray_origins, ray_directions);
     return RayGroup{ ray_origins, ray_directions };
 }
 
@@ -164,8 +160,8 @@ void Camera::GetOrigins(Vec3Group& origins) const {
         return;
     }
 
-        for (size_t sample = 0; sample < globals::samples; sample++) {
-            auto d{ DefocusDiskSample() };
+    for (size_t sample = 0; sample < globals::samples; sample++) {
+        auto d{ DefocusDiskSample() };
         origins.SetElement(sample, d);
     }
 }
