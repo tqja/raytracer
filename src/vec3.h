@@ -227,11 +227,11 @@ public:
         );
     }
 
-    template <typename VecLike>
-    void MulAdd(const VecLike& b, const VecLike& c, Vec3Group& out) {
+    template <VecLike VecLikeB, VecLike VecLikeC>
+    void MulAdd(const VecLikeB& b, const VecLikeC& c, Vec3Group& out) {
         simd::DispatchBase* dp{ simd::GetDispatch() };
 
-        for (size_t axis; axis < 3; axis++) {
+        for (size_t axis = 0; axis < 3; axis++) {
             dp->MulAdd(GetOperand(*this, axis), GetOperand(b, axis), GetOperand(c, axis),
                 GetOperand(out, axis), globals::samples);
         }
@@ -241,11 +241,18 @@ public:
         return Vec3{ m_x[i], m_y[i], m_z[i] };
     }
 
-    void operator+=(const Vec3Group& other) {
+    template <typename VecLike>
+    void operator+=(const VecLike& other) {
         Add(other, *this);
     }
 
-    void operator-=(const Vec3Group& other) {
+    template <typename VecLike>
+    void operator-=(const VecLike& other) {
+        Sub(other, *this);
+    }
+
+    template <typename VecLike>
+    void operator*=(const VecLike& other) {
         Sub(other, *this);
     }
 
