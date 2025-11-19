@@ -185,6 +185,18 @@ public:
     void ZeroZ() { std::memset(m_z.data(), 0, sizeof(m_z)); }
     void Zero() { ZeroX(); ZeroY(); ZeroZ(); }
 
+    void SetElement(size_t i, const Vec3& vec) {
+        m_x[i] = vec.x();
+        m_y[i] = vec.y();
+        m_z[i] = vec.z();
+    }
+
+    void Broadcast(Vec3 vec) {
+        std::fill(m_x.begin(), m_x.end(), vec.x());
+        std::fill(m_y.begin(), m_y.end(), vec.y());
+        std::fill(m_z.begin(), m_z.end(), vec.z());
+    }
+
     template <typename VecLike>
     void Add(const VecLike& other, Vec3Group& out) {
         BinaryOperation(other, out, []<typename FloatLike>(

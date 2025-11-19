@@ -160,17 +160,13 @@ Point3 Camera::DefocusDiskSample() const {
 
 void Camera::GetOrigins(Vec3Group& origins) const {
     if (m_defocus_angle <= 0) {
-        origins.x().assign(globals::samples, m_camera_center.x());
-        origins.y().assign(globals::samples, m_camera_center.y());
-        origins.z().assign(globals::samples, m_camera_center.z());
+        origins.Broadcast(m_camera_center);
+        return;
     }
-    else {
+
         for (size_t sample = 0; sample < globals::samples; sample++) {
             auto d{ DefocusDiskSample() };
-            origins.x()[sample] = d.x();
-            origins.y()[sample] = d.y();
-            origins.z()[sample] = d.z();
-        }
+        origins.SetElement(sample, d);
     }
 }
 
