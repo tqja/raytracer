@@ -171,6 +171,7 @@ inline Vec3 RandomInUnitDisk() {
 class Vec3Group {
 public:
     Vec3Group() : m_x(globals::samples), m_y(globals::samples), m_z(globals::samples) {};
+    Vec3Group(std::vector<float> x, std::vector<float> y, std::vector<float> z) : m_x(x), m_y(y), m_z(z) {};
 
     std::vector<float>& x() { return m_x; }
     std::vector<float>& y() { return m_y; }
