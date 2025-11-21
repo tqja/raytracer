@@ -250,9 +250,41 @@ public:
         }
     }
 
-        for (size_t axis = 0; axis < 3; axis++) {
-            dp->MulAdd(GetOperand(*this, axis), GetOperand(b, axis), GetOperand(c, axis),
-                GetOperand(out, axis), globals::samples);
+    void Squared(Vec3Group& out) {
+        for (size_t axis = Axis::ax; axis <= Axis::az; axis++) {
+            m_dp->Squared(GetOperand(*this, axis), GetOperand(out, axis), globals::samples);
+        }
+    }
+
+    void LengthSquared(float* out) {
+        m_dp->Squared(GetOperand(*this, Axis::ax), out, globals::samples);
+        m_dp->MulAdd(GetOperand(*this, Axis::ay), GetOperand(*this, Axis::ay), out, out, globals::samples);
+        m_dp->MulAdd(GetOperand(*this, Axis::az), GetOperand(*this, Axis::az), out, out, globals::samples);
+    }
+
+    void Length(float* out) {
+        std::vector<float> length_squared(globals::samples);
+        LengthSquared(length_squared.data());
+        m_dp->Sqrt(length_squared.data(), out, globals::samples);
+    }
+
+    Vec3 Reduce() {
+        Vec3 sum{};
+
+        for (size_t axis = Axis::ax; axis <= Axis::az; axis++) {
+            sum.e[axis] = m_dp->ReduceSum(GetOperand(*this, axis), globals::samples);
+        }
+
+        return sum;
+    }
+
+    void UnitVectors(Vec3Group& out) {
+        std::vector<float> length(globals::samples);
+        Length(length.data());
+        m_dp->Reciprocal(length.data(), length.data(), globals::samples);
+
+        for (size_t axis = Axis::ax; axis <= Axis::az; axis++) {
+            m_dp->Mul(GetOperand(*this, axis), length.data(), GetOperand(out, axis), globals::samples);
         }
     }
 
