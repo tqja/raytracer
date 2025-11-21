@@ -12,3 +12,7 @@ SIMD_REGISTER(void, MulAdd, const float* a, const float* b, const float* c, floa
 SIMD_REGISTER(void, MulAdd, const float* a, const float b, const float* c, float* out, size_t total_lanes)
 SIMD_REGISTER(void, MulAdd, const float* a, const float* b, const float c, float* out, size_t total_lanes)
 SIMD_REGISTER(void, MulAdd, const float* a, const float b, const float c, float* out, size_t total_lanes)
+SIMD_REGISTER(float, ReduceSum, const float* in, int total_lanes);
+SIMD_REGISTER(void, Squared, const float* in, float* out, size_t total_lanes)
+SIMD_REGISTER(void, Sqrt, const float* in, float* out, size_t total_lanes)
+SIMD_REGISTER(void, Reciprocal, const float* in, float* out, size_t total_lanes)

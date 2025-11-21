@@ -32,25 +32,45 @@ struct Dispatch : public simd::DispatchBase {
             << '\n';
     }
 
-    void Add(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, float* out, const size_t total_lanes
+    void Reciprocal(const float* HWY_RESTRICT in, float* out, size_t total_lanes) const override {
+        const auto op = [](auto in) { return hn::ApproximateReciprocal(in); };
+        UnaryOp(in, out, total_lanes, op);
+    }
+
+    void Sqrt(const float* HWY_RESTRICT in, float* out, size_t total_lanes) const override {
+        const auto op = [](auto in) { return hn::Sqrt(in); };
+        UnaryOp(in, out, total_lanes, op);
+    }
+
+    void Squared(const float* HWY_RESTRICT in, float* out, size_t total_lanes) const override {
+        const auto op = [](auto in) { return hn::Mul(in, in); };
+        UnaryOp(in, out, total_lanes, op);
+    }
+
+    void Add(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2,
+        float* HWY_RESTRICT out, const size_t total_lanes
     ) const override {
         const auto op = [](auto in1, auto in2) { return hn::Add(in1, in2); };
         BinaryOp(vec1, vec2, out, total_lanes, op);
     }
 
-    void Add(const float* HWY_RESTRICT vec, const float scalar, float* out, const size_t total_lanes) const override {
+    void Add(const float* HWY_RESTRICT vec, const float scalar,
+        float* HWY_RESTRICT out, const size_t total_lanes
+    ) const override {
         const auto op = [](auto in1, auto in2) { return hn::Add(in1, in2); };
         BinaryOp(vec, scalar, out, total_lanes, op);
     }
 
     void Sub(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2,
-        float* out, const size_t total_lanes
+        float* HWY_RESTRICT out, const size_t total_lanes
     ) const override {
         const auto op = [](auto in1, auto in2) { return hn::Sub(in1, in2); };
         BinaryOp(vec1, vec2, out, total_lanes, op);
     }
 
-    void Sub(const float* HWY_RESTRICT vec, const float scalar, float* out, const size_t total_lanes) const override {
+    void Sub(const float* HWY_RESTRICT vec, const float scalar,
+        float* HWY_RESTRICT out, const size_t total_lanes
+    ) const override {
         const auto op = [](auto in1, auto in2) { return hn::Sub(in1, in2); };
         BinaryOp(vec, scalar, out, total_lanes, op);
     }
@@ -63,26 +83,47 @@ struct Dispatch : public simd::DispatchBase {
     }
 
     void Mul(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, 
-        float* out, const size_t total_lanes
+        float* HWY_RESTRICT out, const size_t total_lanes
     ) const override {
         const auto op = [](auto in1, auto in2) { return hn::Mul(in1, in2); };
         BinaryOp(vec1, vec2, out, total_lanes, op);
     }
 
-    void Mul(const float* HWY_RESTRICT vec, const float scalar, float* out, const size_t total_lanes) const override {
+    void Mul(const float* HWY_RESTRICT vec, const float scalar, float* HWY_RESTRICT out, const size_t total_lanes
+    ) const override {
         const auto op = [](auto in1, auto in2) { return hn::Mul(in1, in2); };
         BinaryOp(vec, scalar, out, total_lanes, op);
     }
 
     template<typename Operation>
+    void UnaryOp(const float* HWY_RESTRICT in, float* HWY_RESTRICT out, const size_t total_lanes, Operation op) const {
+        const hn::ScalableTag<float> d{};
+        const size_t N{ hn::Lanes(d) };
+        const size_t aligned_lanes{ total_lanes & ~(N - 1) };
+
+        size_t i{};
+        for (; i < aligned_lanes; i += N) {
+            const auto vec{ hn::LoadU(d, in + i) };
+            hn::StoreU(op(vec), d, out + i);
+        }
+
+        if (i < total_lanes) {
+            const size_t remaining_lanes{ total_lanes - i };
+            auto mask{ hn::FirstN(d, remaining_lanes) };
+            const auto vec = hn::MaskedLoad(mask, d, in + i);
+            hn::BlendedStore(op(vec), mask, d, out + i);
+        }
+    }
+
+    template<typename Operation>
     void BinaryOp(const float* HWY_RESTRICT in1, const float* HWY_RESTRICT in2,
-        float* out, const size_t total_lanes, Operation op
+        float* HWY_RESTRICT out, const size_t total_lanes, Operation op
     ) const {
         const hn::ScalableTag<float> d{};
         const size_t N{ hn::Lanes(d) };
         const size_t aligned_lanes{ total_lanes & ~(N - 1) };
 
-        size_t i = 0;
+        size_t i{};
         for (; i < aligned_lanes; i += N) {
             const auto v1{ hn::LoadU(d, in1 + i) };
             const auto v2{ hn::LoadU(d, in2 + i) };
@@ -100,7 +141,7 @@ struct Dispatch : public simd::DispatchBase {
 
     template<typename Operation>
     void BinaryOp(const float* HWY_RESTRICT in, const float scalar,
-        float* out, const size_t total_lanes, Operation op
+        float* HWY_RESTRICT out, const size_t total_lanes, Operation op
     ) const {
         const hn::ScalableTag<float> d{};
         const size_t N{ hn::Lanes(d) };
@@ -108,7 +149,7 @@ struct Dispatch : public simd::DispatchBase {
 
         const auto v2{ hn::Set(d, scalar) };
 
-        size_t i = 0;
+        size_t i{};
         for (; i < aligned_lanes; i += N) {
             const auto v1{ hn::LoadU(d, in + i) };
             hn::StoreU(op(v1, v2), d, out + i);
@@ -123,6 +164,31 @@ struct Dispatch : public simd::DispatchBase {
 
     }
 
+    template<typename Operation>
+    void BinaryOp(const float scalar, const float* HWY_RESTRICT in,
+        float* HWY_RESTRICT out, const size_t total_lanes, Operation op
+    ) const {
+        const hn::ScalableTag<float> d{};
+        const size_t N{ hn::Lanes(d) };
+        const size_t aligned_lanes{ total_lanes & ~(N - 1) };
+
+        const auto v1{ hn::Set(d, scalar) };
+
+        size_t i{};
+        for (; i < aligned_lanes; i += N) {
+            const auto v2{ hn::LoadU(d, in + i) };
+            hn::StoreU(op(v1, v2), d, out + i);
+        }
+
+        if (i < total_lanes) {
+            const size_t remaining_lanes{ total_lanes - i };
+            auto mask{ hn::FirstN(d, remaining_lanes) };
+            const auto v2 = hn::MaskedLoad(mask, d, in + i);
+            hn::BlendedStore(op(v1, v2), mask, d, out + i);
+        }
+
+    }
+
     void MulAdd(const float* HWY_RESTRICT a, const float* HWY_RESTRICT b, const float* HWY_RESTRICT c,
         float* HWY_RESTRICT out, size_t total_lanes
     ) const override {
@@ -130,7 +196,7 @@ struct Dispatch : public simd::DispatchBase {
         const size_t N{ hn::Lanes(d) };
         const size_t aligned_lanes{ total_lanes & ~(N - 1) };
 
-        size_t i = 0;
+        size_t i{};
         for (; i < aligned_lanes; i += N) {
             const auto av{ hn::LoadU(d, &a[i]) };
             const auto bv{ hn::LoadU(d, &b[i]) };
@@ -157,7 +223,7 @@ struct Dispatch : public simd::DispatchBase {
 
         const auto bv{ hn::Set(d, b) };
 
-        size_t i = 0;
+        size_t i{};
         for (; i < aligned_lanes; i += N) {
             const auto av{ hn::LoadU(d, &a[i]) };
             const auto cv{ hn::LoadU(d, &c[i]) };
@@ -182,7 +248,7 @@ struct Dispatch : public simd::DispatchBase {
 
         const auto cv{ hn::Set(d, c) };
 
-        size_t i = 0;
+        size_t i{};
         for (; i < aligned_lanes; i += N) {
             const auto av{ hn::LoadU(d, &a[i]) };
             const auto bv{ hn::LoadU(d, &b[i]) };
@@ -207,7 +273,7 @@ struct Dispatch : public simd::DispatchBase {
         const auto bv{ hn::Set(d, b) };
         const auto cv{ hn::Set(d, c) };
 
-        size_t i = 0;
+        size_t i{};
         for (; i < aligned_lanes; i += N) {
             const auto av{ hn::LoadU(d, &a[i]) };
             hn::StoreU(hn::MulAdd(av, bv, cv), d, &out[i]);
@@ -221,10 +287,30 @@ struct Dispatch : public simd::DispatchBase {
         }
     }
 
+    float ReduceSum(const float* HWY_RESTRICT in, int total_lanes) const override {
+        hn::ScalableTag<float> d;
+        size_t N{ hn::Lanes(d) };
+        const size_t aligned_lanes{ total_lanes & ~(N - 1) };
+        float sum{};
+
+        size_t i{};
+        for (; i < aligned_lanes; i += N) {
+            auto vec{ hn::LoadU(d, in + i) };
+            sum += hn::ReduceSum(d, vec);
+        }
+
+        if (i < total_lanes) {
+            const size_t remaining_lanes{ total_lanes - i };
+            auto mask{ hn::FirstN(d, remaining_lanes) };
+            const auto vec = hn::MaskedLoad(mask, d, in + i);
+            sum += hn::ReduceSum(d, vec);
+    }
+
+        return sum;
+    }
 };
 
-static simd::DispatchBase* _GetDispatch()
-{
+static simd::DispatchBase* _GetDispatch() {
     static Dispatch d;
     return &d;
 }
@@ -233,14 +319,15 @@ static simd::DispatchBase* _GetDispatch()
 
 #if HWY_ONCE
 
-namespace simd
-{
+namespace simd {
+
     HWY_EXPORT(_GetDispatch);
 
     simd::DispatchBase* GetDispatch()
     {
         return HWY_DYNAMIC_DISPATCH(_GetDispatch)();
     }
+
 }
 
 #endif
