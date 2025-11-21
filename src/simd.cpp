@@ -55,6 +55,13 @@ struct Dispatch : public simd::DispatchBase {
         BinaryOp(vec, scalar, out, total_lanes, op);
     }
 
+    void Sub(const float scalar, const float* HWY_RESTRICT vec,
+        float* HWY_RESTRICT out, const size_t total_lanes
+    ) const override {
+        const auto op = [](auto in1, auto in2) { return hn::Sub(in1, in2); };
+        BinaryOp(scalar, vec, out, total_lanes, op);
+    }
+
     void Mul(const float* HWY_RESTRICT vec1, const float* HWY_RESTRICT vec2, 
         float* out, const size_t total_lanes
     ) const override {
