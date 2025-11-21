@@ -225,7 +225,12 @@ public:
             const float* l, const FloatLike r, float* out, const size_t num
             ) { m_dp->Sub(l, r, out, num); });
         }
-        );
+
+    template <VecLike VecLikeA, VecLike VecLikeB>
+    static void SubVecLike(const VecLikeA& a, const VecLikeB& b, Vec3Group& out) {
+        for (size_t axis = Axis::ax; axis <= Axis::az; axis++) {
+            m_dp->Sub(GetOperand(a, axis), GetOperand(b, axis), GetOperand(out, axis), globals::samples);
+        }
     }
 
     template <typename VecLike>
