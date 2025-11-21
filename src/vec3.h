@@ -212,37 +212,38 @@ public:
 
     template <typename VecLike>
     void Add(const VecLike& other, Vec3Group& out) {
-        BinaryOperation(other, out, []<typename FloatLike>(
-            simd::DispatchBase * dp, const float* l, const FloatLike r, float* out, const size_t num
-            ) {
-            dp->Add(l, r, out, num);
+        BinaryOperation(other, out, [this]<typename FloatLike>(
+            const float* l, const FloatLike r, float* out, const size_t num
+            ) { m_dp->Add(l, r, out, num); });
         }
         );
     }
 
     template <typename VecLike>
     void Sub(const VecLike& other, Vec3Group& out) {
-        BinaryOperation(other, out, []<typename FloatLike>(
-            simd::DispatchBase * dp, const float* l, const FloatLike r, float* out, const size_t num
-            ) {
-            dp->Sub(l, r, out, num);
+        BinaryOperation(other, out, [this]<typename FloatLike>(
+            const float* l, const FloatLike r, float* out, const size_t num
+            ) { m_dp->Sub(l, r, out, num); });
         }
         );
     }
 
     template <typename VecLike>
     void Mul(const VecLike& other, Vec3Group& out) {
-        BinaryOperation(other, out, []<typename FloatLike>(
-            simd::DispatchBase * dp, const float* l, const FloatLike r, float* out, const size_t num
-            ) {
-            dp->Mul(l, r, out, num);
+        BinaryOperation(other, out, [this]<typename FloatLike>(
+            const float* l, const FloatLike r, float* out, const size_t num
+            ) { m_dp->Mul(l, r, out, num); });
         }
         );
     }
 
     template <VecLike VecLikeB, VecLike VecLikeC>
     void MulAdd(const VecLikeB& b, const VecLikeC& c, Vec3Group& out) {
-        simd::DispatchBase* dp{ simd::GetDispatch() };
+        for (size_t axis = Axis::ax; axis <= Axis::az; axis++) {
+            m_dp->MulAdd(GetOperand(*this, axis), GetOperand(b, axis), GetOperand(c, axis),
+                GetOperand(out, axis), globals::samples);
+        }
+    }
 
         for (size_t axis = 0; axis < 3; axis++) {
             dp->MulAdd(GetOperand(*this, axis), GetOperand(b, axis), GetOperand(c, axis),
@@ -273,6 +274,9 @@ private:
     std::vector<float> m_x;
     std::vector<float> m_y;
     std::vector<float> m_z;
+
+
+    simd::DispatchBase* m_dp{ simd::GetDispatch() };
 
     template <typename VecLike, typename Operation>
     void BinaryOperation(const VecLike& other, Vec3Group& out, Operation operation) {
