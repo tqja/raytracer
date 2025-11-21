@@ -275,15 +275,14 @@ private:
     std::vector<float> m_y;
     std::vector<float> m_z;
 
+    enum Axis { ax, ay, az };
 
     simd::DispatchBase* m_dp{ simd::GetDispatch() };
 
     template <typename VecLike, typename Operation>
     void BinaryOperation(const VecLike& other, Vec3Group& out, Operation operation) {
-        simd::DispatchBase* dp{ simd::GetDispatch() };
-
-        for (size_t axis = 0; axis < 3; axis++) {
-            operation(dp, GetOperand(*this, axis), GetOperand(other, axis), GetOperand(out, axis), globals::samples);
+        for (size_t axis = Axis::ax; axis <= Axis::az; axis++) {
+            operation(GetOperand(*this, axis), GetOperand(other, axis), GetOperand(out, axis), globals::samples);
         }
     }
 
