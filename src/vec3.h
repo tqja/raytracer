@@ -20,9 +20,9 @@ public:
     Vec3() : e{ 0,0,0 } {}
     Vec3(float e0, float e1, float e2) : e{ e0, e1, e2 } {}
 
-    float x() const { return e[0]; }
-    float y() const { return e[1]; }
-    float z() const { return e[2]; }
+    const float x() const { return e[0]; }
+    const float y() const { return e[1]; }
+    const float z() const { return e[2]; }
 
     Vec3 operator-() const { return Vec3(-e[0], -e[1], -e[2]); }
     float operator[](int i) const { return e[i]; }
