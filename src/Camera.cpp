@@ -166,8 +166,23 @@ void Camera::GetOrigins(Vec3Group& origins) const {
     }
 }
 
-Colour Camera::LerpColours(const Colour& c1, const Colour& c2, float blend) {
-    return (1.0f - blend) * c1 + blend * c2;
+Vec3 Camera::LerpColours(const Colour& c1, const Colour& c2, std::vector<float>& blend) {
+    simd::DispatchBase* dp{ simd::GetDispatch() };
+    Vec3Group blend_vec{blend, blend, blend};  // TODO: find a way to perform the operations without constructing Vec3Group
+    
+    Vec3Group c2_blend{};
+    c2_blend.Broadcast(c2);
+    c2_blend.Mul(blend_vec, c2_blend);
+
+    dp->Sub(1.0f, blend.data(), blend.data(), globals::samples);
+    blend_vec = { blend, blend, blend };
+
+    Vec3Group c1_blend{};
+    c1_blend.Broadcast(c1);
+    // store result in c1_blend to avoid creating a new Vec3Group
+    c1_blend.MulAdd(blend_vec, c2_blend, c1_blend);
+
+    return c1_blend.Reduce();    
 }
 
 Colour Camera::GetSampledColour(const Point3& p_pixel, const Hittable& world) const {
