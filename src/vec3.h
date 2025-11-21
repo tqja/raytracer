@@ -215,8 +215,6 @@ public:
         BinaryOperation(other, out, [this]<typename FloatLike>(
             const float* l, const FloatLike r, float* out, const size_t num
             ) { m_dp->Add(l, r, out, num); });
-        }
-        );
     }
 
     template <typename VecLike>
@@ -224,7 +222,7 @@ public:
         BinaryOperation(other, out, [this]<typename FloatLike>(
             const float* l, const FloatLike r, float* out, const size_t num
             ) { m_dp->Sub(l, r, out, num); });
-        }
+    }
 
     template <VecLike VecLikeA, VecLike VecLikeB>
     static void SubVecLike(const VecLikeA& a, const VecLikeB& b, Vec3Group& out) {
@@ -238,8 +236,6 @@ public:
         BinaryOperation(other, out, [this]<typename FloatLike>(
             const float* l, const FloatLike r, float* out, const size_t num
             ) { m_dp->Mul(l, r, out, num); });
-        }
-        );
     }
 
     template <VecLike VecLikeB, VecLike VecLikeC>
@@ -341,13 +337,13 @@ private:
     static auto GetOperand(const VecLike& v, size_t axis) {
         if constexpr (std::is_same_v<VecLike, Vec3>) {
             if (axis == 0) return v.x();
-            if (axis == 1) return v.y();
-            return v.z();
+            else if (axis == 1) return v.y();
+            else return v.z();
         }
         else {
             if (axis == 0) return v.x().data();
-            if (axis == 1) return v.y().data();
-            return v.z().data();
+            else if (axis == 1) return v.y().data();
+            else return v.z().data();
         }
     }
 };
