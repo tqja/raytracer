@@ -1,6 +1,5 @@
 #pragma once
 
-SIMD_REGISTER(void, Payload, )
 SIMD_REGISTER(void, Add, const float* in1, const float* in2, float* out, size_t total_lanes)
 SIMD_REGISTER(void, Add, const float* vec, const float scalar, float* out, const size_t total_lanes)
 SIMD_REGISTER(void, Sub, const float* in1, const float* in2, float* out, size_t total_lanes)

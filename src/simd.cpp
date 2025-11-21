@@ -1,7 +1,3 @@
-#include <cassert>
-#include <span>
-#include <iostream>
-
 #include "simd.h"
 
 #undef HWY_TARGET_INCLUDE
@@ -25,12 +21,6 @@ struct Dispatch : public simd::DispatchBase {
         virtual RET NAME(__VA_ARGS__) const = 0;
     #include "interface.h"
     #undef SIMD_REGISTER
-
-    void Payload() const override {
-        std::cout << "payload: target = "
-            << hwy::TargetName(HWY_TARGET)
-            << '\n';
-    }
 
     void Reciprocal(const float* HWY_RESTRICT in, float* out, size_t total_lanes) const override {
         const auto op = [](auto in) { return hn::ApproximateReciprocal(in); };
@@ -304,7 +294,7 @@ struct Dispatch : public simd::DispatchBase {
             auto mask{ hn::FirstN(d, remaining_lanes) };
             const auto vec = hn::MaskedLoad(mask, d, in + i);
             sum += hn::ReduceSum(d, vec);
-    }
+        }
 
         return sum;
     }
@@ -321,12 +311,12 @@ static simd::DispatchBase* _GetDispatch() {
 
 namespace simd {
 
-    HWY_EXPORT(_GetDispatch);
+HWY_EXPORT(_GetDispatch);
 
-    simd::DispatchBase* GetDispatch()
-    {
-        return HWY_DYNAMIC_DISPATCH(_GetDispatch)();
-    }
+simd::DispatchBase* GetDispatch()
+{
+    return HWY_DYNAMIC_DISPATCH(_GetDispatch)();
+}
 
 }
 
