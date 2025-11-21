@@ -171,9 +171,9 @@ Colour Camera::LerpColours(const Colour& c1, const Colour& c2, float blend) {
 }
 
 Colour Camera::GetSampledColour(const Point3& p_pixel, const Hittable& world) const {
-    Vec3Group colour_samples{};
-    RayGroup ray_samples{ GetRayBlock(p_pixel, ray_samples) };
-    //colour_samples += RayColour(ray, world); // TODO: SIMD vector addition, colour_block + RayColour()
+    Vec3 accumulated_colours{};
+    RayGroup ray_samples{ GetRayBlock(p_pixel) };
+    RayColours(ray_samples, accumulated_colours, world);
 
-    return Colours::black * m_pixel_samples_scale; // TODO: SIMD vector by scalar multiply, colour_block * sample scale
+    return accumulated_colours * m_pixel_samples_scale;
 }
