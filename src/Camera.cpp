@@ -144,8 +144,9 @@ Vec3 Camera::SampleSquare() {
 
 void Camera::FillSampleSquare(Vec3Group& point_group) {
     for (size_t sample = 0; sample < globals::samples; sample++) {
-        point_group.x()[sample] = RandomFloat() - 0.5f;
-        point_group.y()[sample] = RandomFloat() - 0.5f;
+        point_group.SetX(sample, RandomFloat() - 0.5f);
+        point_group.SetY(sample, RandomFloat() - 0.5f);
+    }
     }
 }
 

@@ -191,6 +191,18 @@ public:
         m_z[i] = vec.z();
     }
 
+    void SetX(size_t i, const float value) {
+        m_x[i] = value;
+    }
+
+    void SetY(size_t i, const float value) {
+        m_y[i] = value;
+    }
+
+    void SetZ(size_t i, const float value) {
+        m_z[i] = value;
+    }
+
     void Broadcast(Vec3 vec) {
         std::fill(m_x.begin(), m_x.end(), vec.x());
         std::fill(m_y.begin(), m_y.end(), vec.y());
