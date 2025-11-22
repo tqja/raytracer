@@ -322,13 +322,13 @@ private:
     template <typename VecLike>
     static auto GetOperand(VecLike& v, size_t axis) {
         if constexpr (std::is_same_v<std::remove_reference_t<VecLike>, Vec3>) {
-            if (axis == 0) return v.x();
-            if (axis == 1) return v.y();
+            if (axis == Axis::ax) return v.x();
+            if (axis == Axis::ay) return v.y();
             return v.z();
         }
         else {
-            if (axis == 0) return v.x().data();
-            if (axis == 1) return v.y().data();
+            if (axis == Axis::ax) return v.x().data();
+            if (axis == Axis::ay) return v.y().data();
             return v.z().data();
         }
     }
@@ -336,14 +336,14 @@ private:
     template <typename VecLike>
     static auto GetOperand(const VecLike& v, size_t axis) {
         if constexpr (std::is_same_v<VecLike, Vec3>) {
-            if (axis == 0) return v.x();
-            else if (axis == 1) return v.y();
-            else return v.z();
+            if (axis == Axis::ax) return v.x();
+            if (axis == Axis::ay) return v.y();
+            return v.z();
         }
         else {
-            if (axis == 0) return v.x().data();
-            else if (axis == 1) return v.y().data();
-            else return v.z().data();
+            if (axis == Axis::ax) return v.x().data();
+            if (axis == Axis::ay) return v.y().data();
+            return v.z().data();
         }
     }
 };
