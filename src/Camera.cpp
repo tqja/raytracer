@@ -17,21 +17,24 @@ Camera::Camera(int image_width, int image_height, float fov) : m_image_width{ im
 
 void Camera::RayColours(const RayGroup& rays, Vec3& colour, const Hittable& world, int depth) const {
     if (depth >= m_max_bounce_depth) {
-        return Colours::black;
+        // set all rays in mask to black
     }
 
     HitRecord record{};
     Interval ray_interval{ 0.001f, infinity };
 
-    if (world.hit(ray, ray_interval, record)) {
-        Ray scattered{};
-        Colour attenuation{};
+    // hit() should create hit mask
+    //if (world.hit(rays, ray_interval, record)) {
+    //    // create scattered mask
+    //    Colour attenuation{};
 
-        if (record.material->Scatter(ray, record, attenuation, scattered)) {
-            return attenuation * RayColour(scattered, world, depth + 1);
-        }
-        return Colours::black; // ray was absorbed
-    }
+    //    // Scatter() should fill scattered mask
+    //    if (record.material->Scatter(rays, record, attenuation, scattered)) {
+    //        // attenuation * each ray in scattered mask
+    //        // then call RayColours with scattered mask (exclude other rays from recursion)
+    //    }
+    //    // set all rays that aren't in scattered mask to black (absorbed by material)
+    //}
 
     // now operate on rays that were not hit (inverse hit mask)
 
@@ -152,10 +155,15 @@ void Camera::FillSampleSquare(Vec3Group& point_group) {
         point_group.SetX(sample, RandomFloat() - 0.5f);
         point_group.SetY(sample, RandomFloat() - 0.5f);
     }
-    }
 }
 
-Point3 Camera::DefocusDiskSample() const {
+void Camera::GetBlendValues(const std::vector<float> unit_directions_y, std::vector<float>& blend_values) {
+    simd::DispatchBase* dp{ simd::GetDispatch() };
+    dp->Add(unit_directions_y.data(), 1.0f, blend_values.data(), globals::samples);
+    dp->Mul(blend_values.data(), 0.5f, blend_values.data(), globals::samples);
+}
+
+Point3 Camera::DefocusDiskSample() const { 
     Vec3 p{ RandomInUnitDisk() };
     return m_camera_center + p[0] * m_defocus_disk_u + p[1] * m_defocus_disk_v;
 }
