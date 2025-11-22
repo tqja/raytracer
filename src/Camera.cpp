@@ -96,10 +96,7 @@ void Camera::Update() {
     m_defocus_disk_v = v * defocus_radius;
 }
 
-RayGroup Camera::GetRayBlock(const Point3& p, RayGroup& rays_out) const {
-    auto* dp{ simd::GetDispatch() };
-
-
+RayGroup Camera::GetRayBlock(const Point3& p) const {
     Vec3Group offsets{};
     FillSampleSquare(offsets);
     offsets += p;
