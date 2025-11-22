@@ -1,13 +1,15 @@
 #include "Camera.h"
 #include "Colour.h"
 #include "Vec3.h"
+#include "ColourConstants.h"
 #include "Framebuffer.h"
-#include "Geometry.h"
 #include "Hittable.h"
 #include "HittableList.h"
 #include "Utility.h"
-#include "ColourConstants.h"
 #include "simd.h"
+
+const Colour Camera::m_background_colour_1 = Colours::white;
+const Colour Camera::m_background_colour_2 = { 0.5f, 0.7f, 1.0f };
 
 Camera::Camera(int image_width, int image_height, float fov) : m_image_width{ image_width }, m_image_height{ image_height }, m_horizontal_fov{ fov } {
     Update();
@@ -37,7 +39,9 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
     Colour c1{ Colours::white };
     Colour c2{ 0.5f, 0.7f, 1.0f };
 
-    return LerpColours(c1, c2, blend);
+    // must pass blend array and generate colour for each ray in nohit mask.
+    // accumulate each colour in the output variable
+    colour += LerpColours(m_background_colour_1, m_background_colour_2, blend_values);
 }
 
 Framebuffer Camera::Render(const HittableList& world) const {

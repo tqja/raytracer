@@ -49,6 +49,9 @@ private:
 
     int m_max_bounce_depth{ 10 };
 
+    static const Colour m_background_colour_1;
+    static const Colour m_background_colour_2;
+
     Colour GetSampledColour(const Point3& p_pixel, const Hittable& world) const;
     static Vec3 SampleSquare();
     static void FillSampleSquare(Vec3Group& v);
