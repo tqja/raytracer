@@ -15,7 +15,7 @@ Camera::Camera(int image_width, int image_height, float fov) : m_image_width{ im
     Update();
 }
 
-Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const {
+void Camera::RayColours(const RayGroup& rays, Vec3& colour, const Hittable& world, int depth) const {
     if (depth >= m_max_bounce_depth) {
         return Colours::black;
     }
@@ -33,11 +33,15 @@ Colour Camera::RayColour(const Ray& ray, const Hittable& world, int depth) const
         return Colours::black; // ray was absorbed
     }
 
-    Vec3 unit_direction = UnitVector(ray.GetDirection());
-    float blend{ (unit_direction.y() + 1.0f) / 2.0f };
+    // now operate on rays that were not hit (inverse hit mask)
 
-    Colour c1{ Colours::white };
-    Colour c2{ 0.5f, 0.7f, 1.0f };
+    // generate unit direction for each ray. store in Vec3Group
+    Vec3Group directions{ rays.GetDirections() };
+    Vec3Group unit_directions{};
+    directions.UnitVectors(unit_directions);
+
+    std::vector<float> blend_values(globals::samples);
+    GetBlendValues(unit_directions.y(), blend_values);
 
     // must pass blend array and generate colour for each ray in nohit mask.
     // accumulate each colour in the output variable
