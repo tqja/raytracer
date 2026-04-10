@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <cmath>
+#include <memory>
 
 #include "Hittable.h"
 #include "Interval.h"
@@ -13,12 +13,9 @@ class Sphere : public Hittable {
 public:
     Sphere() {};
     Sphere(Point3 center, float radius, shared_ptr<Material> material)
-        : m_center{ center },
-          m_radius{ std::fmaxf(0, radius) },
-          m_material(material) {
-    };
+        : m_center{ center }, m_radius{ std::fmaxf(0, radius) }, m_material(material) {};
 
-    bool hit(const Ray&, const Interval& ray_t, HitRecord& record) const override;
+    void hit(const RayGroup& rays, const IntervalGroup& ray_t, HitRecordGroup& records) const override;
 
     const Point3& GetCenter() const { return m_center; }
     const float& GetRadius() const { return m_radius; }

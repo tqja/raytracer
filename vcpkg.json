@@ -1,6 +1,8 @@
 {
-  "name": "raytracer",
-  "version": "1.0.0",
-  "builtin-baseline": "e3ed41868d5034bc608eaaa58383cd6ecdbb5ffb",
-  "dependencies": ["highway"]
+  "dependencies": [
+    {
+      "name": "highway",
+      "features": ["contrib"]
+    }
+  ]
 }

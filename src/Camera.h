@@ -1,11 +1,14 @@
 #pragma once
 
+#include <cstdint>
+#include <vector>
+
 #include "Colour.h"
 #include "Framebuffer.h"
 #include "Hittable.h"
 #include "HittableList.h"
-#include "Vec3.h"
 #include "Ray.h"
+#include "Vec3.h"
 
 class Camera {
 public:
@@ -14,10 +17,10 @@ public:
 
     void Update();
     Framebuffer Render(const HittableList& world) const;
-    void RayColours(const RayGroup& rays, Vec3& colour, const Hittable& world, int depth = 0) const;
+    Vec3 RayColours(RayGroup& rays, const Hittable& world) const;
     Point3 DefocusDiskSample() const;
 
-    RayGroup GetRayBlock(const Point3 & p) const;
+    RayGroup GetRayBlock(const Point3& p) const;
     void SetCameraCenter(const Point3& m_camera_center);
     void SetCameraTarget(const Point3& m_camera_center);
     void SetSamplesPerPixel(int samples);
@@ -57,5 +60,5 @@ private:
     static void FillSampleSquare(Vec3Group& v);
     static void GetBlendValues(const std::vector<float> unit_directions_y, std::vector<float>& blend_values);
     void GetOrigins(Vec3Group& origins) const;
-    static Vec3 LerpColours(const Colour& c1, const Colour& c2, std::vector<float>& blend);
+    static void LerpColours(const Colour& c1, const Colour& c2, const std::vector<float>& blend, Vec3Group& out);
 };

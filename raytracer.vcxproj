@@ -26,11 +26,11 @@
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\Hittable.h" />
     <ClInclude Include="src\HittableList.h" />
-    <ClInclude Include="src\interface.h" />
     <ClInclude Include="src\Interval.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Ray.h" />
-    <ClInclude Include="src\simd.h" />
+    <ClInclude Include="src\simd\interface.h" />
+    <ClInclude Include="src\simd\simd.h" />
     <ClInclude Include="src\stb_image_write.h" />
     <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\Vec3.h" />
@@ -41,7 +41,7 @@
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="src\simd.cpp" />
+    <ClCompile Include="src\simd\simd.cpp" />
     <ClCompile Include="src\stb_write_impl.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -96,6 +96,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>

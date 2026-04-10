@@ -1,15 +1,14 @@
 #include "Framebuffer.h"
-#include "Colour.h"
-#include "Vec3.h"
-#include "Interval.h"
 
 #include <cassert>
-#include <vector>
 #include <limits>
+#include <vector>
 
-Framebuffer::Framebuffer(int w, int h)
-    : m_width{ w }, m_height{ h }
-{
+#include "Colour.h"
+#include "Interval.h"
+#include "Vec3.h"
+
+Framebuffer::Framebuffer(int w, int h) : m_width{ w }, m_height{ h } {
     if (h <= 0) {
         throw std::invalid_argument("Framebuffer height must be greater than 0");
     }
@@ -46,9 +45,7 @@ void Framebuffer::SetPixelColour(const Colour& colour, const Point3& hit_point) 
 
     // scale unit value (0.0 - 1.0) to rgb (0 - 256)
     static const Interval intensity(0.000f, 0.999f);
-    Colour scaled_colour{ intensity.Clamp(r) * 256
-                        , intensity.Clamp(g) * 256
-                        , intensity.Clamp(b) * 256 };
+    Colour scaled_colour{ intensity.Clamp(r) * 256, intensity.Clamp(g) * 256, intensity.Clamp(b) * 256 };
 
     const int row_offset{ static_cast<int>(hit_point.y()) * m_width };
     pixels[static_cast<size_t>(row_offset + hit_point.x())] = scaled_colour;

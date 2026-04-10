@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\simd">
+      <UniqueIdentifier>{60e1a253-ad2e-4999-be48-84ab9a8570d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\simd">
+      <UniqueIdentifier>{ff3baea9-b190-4165-b8ce-7b37a7f7574d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Colour.h">
@@ -54,11 +60,11 @@
     <ClInclude Include="src\ColourConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\simd.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\simd\interface.h">
+      <Filter>Header Files\simd</Filter>
     </ClInclude>
-    <ClInclude Include="src\interface.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\simd\simd.h">
+      <Filter>Header Files\simd</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,8 +86,8 @@
     <ClCompile Include="src\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\simd.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\simd\simd.cpp">
+      <Filter>Source Files\simd</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

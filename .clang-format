@@ -1,0 +1,10 @@
+---
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 120
+---
+Language: Cpp
+DerivePointerAlignment: false
+PointerAlignment: Left
+Cpp11BracedListStyle: False
+AccessModifierOffset: -4
