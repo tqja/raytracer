@@ -50,9 +50,9 @@ Vec3 Camera::RayColours(RayGroup& rays, const Hittable& world) const {
             // update colours with bg colour for nohits
 
             std::vector<float> blend(ray_count);
-            Vec3Group unit_directions{};
-            rays.GetDirections().UnitVectors(unit_directions);
-            dp->Add(unit_directions.y().data(), 1.0f, blend.data(), ray_count);
+            // Vec3Group unit_directions{};
+            // rays.GetDirections().UnitVectors(unit_directions);
+            dp->Add(rays.GetDirections().y().data(), 1.0f, blend.data(), ray_count);
             dp->Mul(blend.data(), 0.5f, ray_count);
 
             Vec3Group background_colours{};
@@ -127,12 +127,12 @@ RayGroup Camera::GetRayBlock(const Point3& p) const {
     // Compute: pixel_samples = origin_pixel + (offsets.x * pixel_delta_u) + (offsets.y * pixel_delta_v)
     Vec3Group pixel_samples{};
 
-    // Add offsets.x * pixel_delta_u
+    // origin_pixel + (offsets.x * pixel_delta_u), store result in delta_u
     Vec3Group delta_u{};
     delta_u.Broadcast(m_pixel_delta_u);
     delta_u.MulAdd(offsets.x(), m_origin_pixel);
 
-    // Add offsets.y * pixel_delta_v
+    // stored result + (offsets.y * pixel_delta_v), store result in delta_v
     Vec3Group delta_v{};
     delta_v.Broadcast(m_pixel_delta_v);
     delta_v.MulAdd(offsets.y(), delta_u);
