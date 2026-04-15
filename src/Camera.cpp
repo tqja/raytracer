@@ -56,7 +56,6 @@ Vec3 Camera::RayColours(RayGroup& rays, const Hittable& world) const {
             dp->Mul(blend.data(), 0.5f, ray_count);
 
             Vec3Group background_colours{};
-            std::vector<float> inverse_never_hit_mask(ray_count);
             LerpColours(m_background_colour_1, m_background_colour_2, blend, background_colours);
             colours.Mul(background_colours);
             break;
