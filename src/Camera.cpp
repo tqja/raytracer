@@ -27,23 +27,26 @@ Camera::Camera(int image_width, int image_height, float fov)
 Vec3 Camera::RayColours(RayGroup& rays, const Hittable& world) const {
     simd::DispatchBase* dp{ simd::GetDispatch() };
     const size_t ray_count{ rays.Size() };
-    std::vector<float> never_hit_mask(ray_count);
+    std::vector<float> no_hit_mask(ray_count);
     HitRecordGroup records{ ray_count };
 
     Vec3Group colours{ std::vector<float>(ray_count, 1.0f), std::vector<float>(ray_count, 1.0f),
                        std::vector<float>(ray_count, 1.0f) };
 
-    // pre-allocate for loop
-    std::vector<float> no_hit_mask(ray_count);
-
     for (int i = 0; i < m_max_bounce_depth; i++) {
         IntervalGroup ray_t{ 0.001f, infinity, ray_count };
         world.hit(rays, ray_t, records);
 
+        std::vector<float> new_hit_mask(ray_count);
+        dp->GreaterThan(records.GetTValues().data(), std::vector<float>(ray_count).data(), new_hit_mask.data(),
+                        ray_count);
+        std::vector<float> new_no_hit_mask(ray_count);
+        dp->Not(new_hit_mask.data(), new_no_hit_mask.data(), ray_count);
+
         dp->Not(records.GetHitMask().data(), no_hit_mask.data(), ray_count);
 
         // maintain rays that still haven't hit within never_hit_mask
-        dp->Or(never_hit_mask.data(), no_hit_mask.data(), ray_count);
+        dp->Or(no_hit_mask.data(), new_no_hit_mask.data(), ray_count);
 
         bool no_rays_hit{ dp->NoBitsSet(records.GetHitMask().data(), ray_count) };
         if (no_rays_hit) {
@@ -225,4 +228,8 @@ Colour Camera::GetSampledColour(const Point3& p_pixel, const Hittable& world) co
     Colour colour{ RayColours(ray_samples, world) };
     colour = colour * m_pixel_samples_scale;
     return colour;
+}
+
+static void update_colours(Vec3Group& colours, const Vec3Group& new_colours, float* mask) {
+    Vec3Group new_colour_group{};
 }

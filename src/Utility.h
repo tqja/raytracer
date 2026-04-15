@@ -35,5 +35,5 @@ private:
 };
 
 namespace globals {
-constexpr int samples{ 500 };
+constexpr int samples{ 16 };
 }  // namespace globals
