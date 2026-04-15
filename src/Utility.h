@@ -35,6 +35,5 @@ private:
 };
 
 namespace globals {
-constexpr size_t lane_width{ 8 };
-constexpr int samples{ 8 };
+constexpr int samples{ 500 };
 }  // namespace globals
