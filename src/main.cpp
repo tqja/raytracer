@@ -54,9 +54,9 @@ static HittableList InitWorld() {
     auto material_glass{ make_shared<Dielectric>(1.50f) };
     auto material_metal{ make_shared<Metal>(Colour(0.7f, 0.6f, 0.5f), 0.0f) };
 
-    // world.add(make_shared<Sphere>(p_diffuse, 1.0f, material_diffuse));
+    world.add(make_shared<Sphere>(p_diffuse, 1.0f, material_diffuse));
     // world.add(make_shared<Sphere>(p_glass, 1.0f, material_glass));
-    // world.add(make_shared<Sphere>(p_metal, 1.0f, material_metal));
+    world.add(make_shared<Sphere>(p_metal, 1.0f, material_metal));
 
     return world;
 }
@@ -70,7 +70,7 @@ int main() {
     HittableList world{ InitWorld() };
 
     Camera camera{ image_width, image_height, fov };
-    camera.SetSamplesPerPixel(10);
+    camera.SetSamplesPerPixel(globals::samples);
     camera.SetMaxBounceDepth(20);
     camera.SetCameraCenter(Point3(13, 2, 3));
     camera.SetCameraTarget(Point3(0, 0, 0));
