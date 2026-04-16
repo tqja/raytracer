@@ -13,7 +13,7 @@
 void Sphere::hit(const RayGroup& rays, const IntervalGroup& ray_t, HitRecordGroup& records) const {
     Vec3Group oc{};
     Vec3Group dir = rays.GetDirections();
-    oc.SubVecLike(m_center, dir);
+    oc.SubVecLike(m_center, rays.GetOrigins());
     simd::DispatchBase* dp{ simd::GetDispatch() };
 
     // calculate the discriminant components
@@ -35,7 +35,6 @@ void Sphere::hit(const RayGroup& rays, const IntervalGroup& ray_t, HitRecordGrou
 
     // use discriminant to determine intersections
     std::vector<float> hit_mask(rays.Size());
-    // TODO: produces -nan when doing 26959 >= 0
     dp->GreaterEqual(discriminant.data(), 0.0f, hit_mask.data(), rays.Size());
     records.SetHitMask(hit_mask);
 
@@ -55,11 +54,11 @@ void Sphere::hit(const RayGroup& rays, const IntervalGroup& ray_t, HitRecordGrou
 
     // Select from roots1 (closer root) if mask is true, otherwise roots2
     std::vector<float> final_roots(rays.Size());
-    dp->BlendVectors(roots1.data(), roots2.data(), roots1_mask.data(), final_roots.data(), rays.Size());
+    dp->BlendVectors(roots1_mask.data(), roots1.data(), roots2.data(), final_roots.data(), rays.Size());
 
     // update t values for rays that hit
     std::vector<float> t_values(records.GetSize());
-    dp->BlendVectors(final_roots.data(), records.GetTValues().data(), hit_mask.data(), t_values.data(), rays.Size());
+    dp->BlendVectors(hit_mask.data(), final_roots.data(), records.GetTValues().data(), t_values.data(), rays.Size());
     records.SetTValues(t_values);
 
     // update hit_points for rays that hit

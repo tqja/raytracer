@@ -38,17 +38,15 @@ Vec3 Camera::RayColours(RayGroup& rays, const Hittable& world) const {
         world.hit(rays, ray_t, records);
 
         std::vector<float> new_hit_mask(ray_count);
-        dp->GreaterThan(records.GetTValues().data(), std::vector<float>(ray_count).data(), new_hit_mask.data(),
-                        ray_count);
+        std::vector<float> zero(ray_count);
+        dp->GreaterThan(records.GetTValues().data(), zero.data(), new_hit_mask.data(), ray_count);
         std::vector<float> new_no_hit_mask(ray_count);
         dp->Not(new_hit_mask.data(), new_no_hit_mask.data(), ray_count);
-
-        dp->Not(records.GetHitMask().data(), no_hit_mask.data(), ray_count);
 
         // maintain rays that still haven't hit within never_hit_mask
         dp->Or(no_hit_mask.data(), new_no_hit_mask.data(), ray_count);
 
-        bool no_rays_hit{ dp->NoBitsSet(records.GetHitMask().data(), ray_count) };
+        bool no_rays_hit{ dp->NoBitsSet(new_hit_mask.data(), ray_count) };
         if (no_rays_hit) {
             // update colours with bg colour for nohits
 
